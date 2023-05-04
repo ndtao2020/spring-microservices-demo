@@ -1,0 +1,50 @@
+version: "3.9"
+
+networks:
+  microservice-network:
+    driver: bridge
+
+secrets:
+  authentication-keystore:
+    # keytool -genkeypair -alias mytestkey -keyalg RSA \
+    #  -dname "CN=Web Server,OU=Unit,O=Organization,L=City,S=State,C=US" \
+    #  -keypass changeme -keystore server.jks -storepass letmein
+    file: ${DEPLOY_PATH}/secrets/keystore.jks
+
+volumes:
+  web_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEPLOY_PATH}/upload
+  web_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEPLOY_PATH}/logs
+
+services:
+  vault:
+    container_name: vault
+    image: vault:latest
+    restart: unless-stopped
+    ports:
+      - "${VAULT_PORT}:8200"
+    command: vault server -config=/vault/config/vault.json
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - microservice-network
+    environment:
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      VAULT_ADDR: http://0.0.0.0:8200
+      VAULT_API_ADDR: http://0.0.0.0:8200
+      VAULT_ADDRESS: http://0.0.0.0:8200
+    volumes:
+      - ${DEPLOY_PATH}/vault/config:/vault/config
+      - ${DEPLOY_PATH}/vault/logs:/vault/logs
+      - ${DEPLOY_PATH}/vault/policies:/vault/policies
+      - ${DEPLOY_PATH}/vault/data:/vault/data
+      - ${DEPLOY_PATH}/vault/plugins:/vault/plugins

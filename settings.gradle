@@ -1,0 +1,5 @@
+include 'config-service'
+include 'discovery-service'
+include 'gateway-service'
+
+rootProject.name = "spring-microservices-demo"

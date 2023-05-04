@@ -1,0 +1,52 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'com.guardsquare:proguard-gradle:7.3.2'
+		classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.5.0.2730'
+	}
+}
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.0.6' apply true
+	id 'io.spring.dependency-management' version '1.1.0' apply true
+	id 'org.sonarqube' version '3.5.0.2730' apply true
+	id "me.champeau.jmh" version "0.7.0" apply true
+}
+
+group = 'com.microservice.example'
+version = '1.0.0'
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+	mavenCentral()
+}
+
+sonarqube {
+	properties {
+		property "sonar.qualitygate.wait", true
+		property "sonar.sourceEncoding", "UTF_8"
+	}
+}
+
+ext {
+	set('jmhVersion', "1.36")
+	set('minioVersion', "8.5.2")
+	set('auth0JwtVersion', "4.4.0")
+	set('springCloudVersion', "2022.0.2")
+	set('springBootAdminVersion', "3.0.2")
+	set('testcontainersVersion', "1.18.0")
+	set('firebaseAdminVersion', "9.1.1")
+}
+
+bootJar {
+	enabled = false
+}
