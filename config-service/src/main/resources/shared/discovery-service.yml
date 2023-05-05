@@ -38,11 +38,11 @@ spring:
         simple:
           instances:
             # ============= CONFIG_SERVICE =============
-#            config-service:
-#              - uri: ${CONFIG_SERVICE_URI:http://localhost:8760}
-#                metadata:
-#                  management:
-#                    context-path: ${CONFIG_SERVICE_URI:http://localhost:8760}${CONFIG_SERVICE_CONTEXT_PATH:/}/actuator
+            #            config-service:
+            #              - uri: ${CONFIG_SERVICE_URI:http://localhost:8760}
+            #                metadata:
+            #                  management:
+            #                    context-path: ${CONFIG_SERVICE_URI:http://localhost:8760}${CONFIG_SERVICE_CONTEXT_PATH:/}/actuator
             # ============= GATEWAY_SERVICE =============
             gateway-service:
               - uri: ${GATEWAY_SERVICE_URI:http://localhost:8080}

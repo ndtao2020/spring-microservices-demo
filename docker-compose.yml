@@ -48,3 +48,31 @@ services:
       - ${DEPLOY_PATH}/vault/policies:/vault/policies
       - ${DEPLOY_PATH}/vault/data:/vault/data
       - ${DEPLOY_PATH}/vault/plugins:/vault/plugins
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - microservice-network
+    volumes:
+      - ${DEPLOY_PATH}/prometheus/config.yml:/etc/prometheus/prometheus.yml
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9090" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  grafana:
+    container_name: sbs_grafana
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - microservice-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3030" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
