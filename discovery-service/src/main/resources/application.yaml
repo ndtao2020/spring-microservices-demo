@@ -2,4 +2,19 @@ spring:
   application:
     name: discovery-service
   config:
+    server:
+      encrypt:
+        enabled: true
     import: optional:configserver:${CONFIG_SERVICE_AUTH_URI:http://config:12345678@localhost:8760}${CONFIG_SERVICE_CONTEXT_PATH:/}
+    # uri: ${CONFIG_SERVICE_URI:http://localhost:8760}${CONFIG_SERVICE_CONTEXT_PATH:/}
+    # username: {CONFIG_SERVICE_SECURITY_USER_NAME:config}
+    # password: ${CONFIG_SERVICE_SECURITY_USER_PASSWORD:12345678}
+    tls:
+      enabled: false # true: for HTTPS connections
+      key-alias: configclient
+      key-store-type: PKCS12
+      key-store: classpath:configclient.jks
+      key-store-password: 12345678
+#      trust-store: <path-of-trust-store>
+#      trust-store-type: PKCS12
+#      trust-store-password: <trust-store-password>

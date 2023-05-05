@@ -1,0 +1,40 @@
+server:
+  port: ${GATEWAY_SERVICE_PORT:8080}
+
+spring:
+  main:
+    web-application-type: reactive
+  jmx:
+    enabled: false
+  security:
+    user:
+      name: ${GATEWAY_SERVICE_SECURITY_USER_NAME:gateway}
+      password: ${GATEWAY_SERVICE_SECURITY_USER_PASSWORD:12345678}
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - '*'
+            allowedHeaders:
+              - '*'
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+      routes:
+        # =====================================
+        - id: manage-service
+          uri: ${DISCOVERY_SERVICE_URI:http://localhost:8761}
+          predicates:
+            - Path=${DISCOVERY_SERVICE_CONTEXT_PATH:/}/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: ERROR
+    org.springframework.http.server.reactive: ERROR
+    org.springframework.web.reactive: ERROR
+    reactor.ipc.netty: ERROR
+    reactor.netty: ERROR

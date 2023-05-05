@@ -1,0 +1,93 @@
+# ================= ================= =================
+# ===================== [SERVER] =================
+# ================= ================= =================
+# keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -alias configserver -keypass 12345678 -storepass 12345678 -keystore configserver.jks -dname "CN=ndtao,OU=teo,O=teoqn,L=quy nhon,ST=binh dinh,C=VN"
+# keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -alias configserver -keypass 12345678 -storepass 12345678 -keystore configserver.p12 -dname "CN=ndtao,OU=teo,O=teoqn,L=quy nhon,ST=binh dinh,C=VN" -storetype PKCS12
+# keytool -list -v -keystore configserver.p12
+# keytool -export -keystore configserver.jks -alias configserver -keypass 12345678 -storepass 12345678 -file configserver.crt
+# keytool -export -keystore configserver.p12 -alias configserver -keypass 12345678 -storepass 12345678 -file configserver.crt
+# keytool -certreq -alias configserver -keypass 12345678 -storepass 12345678 -keystore configserver.p12 -file configserver.csr
+# keytool -importkeystore -deststoretype pkcs12 -destkeystore configserver.p12 -srckeystore configserver.jks
+
+# ================= ================= =================
+# ===================== [CLIENT] =================
+# ================= ================= =================
+# keytool -genkey -keyalg RSA -alias configclient -keypass 12345678 -storepass 12345678 -keystore configclient.jks -dname "CN=ndtao,OU=teo,O=teoqn,L=quy nhon,ST=binh dinh,C=VN"
+# keytool -list -v -keystore configclient.jks -keypass 12345678 -storepass 12345678
+# keytool -export -keystore configclient.jks -alias configclient -keypass 12345678 -storepass 12345678 -file configclient.crt
+# keytool -import -alias configserver -keypass 12345678 -storepass 12345678 -file configclient.crt -keystore config-server.jks
+
+encrypt:
+  keyStore:
+    location: classpath:configserver.jks
+    certificate: classpath:configserver.csr
+    type: PKCS12
+    alias: configserver
+    password: 12345678
+
+server:
+  port: ${CONFIG_SERVICE_PORT:8760}
+  servlet:
+    context-path: ${CONFIG_SERVICE_CONTEXT_PATH:/}
+  compression:
+    enabled: true
+  error:
+    include-message: always
+  ssl:
+    enabled: false # true: for HTTPS connections
+    protocol: TLS
+    certificate: ${encrypt.keyStore.certificate}
+    key-alias: ${encrypt.keyStore.alias}
+    key-password: ${encrypt.keyStore.password}
+    key-store-type: ${encrypt.keyStore.type}
+    key-store: ${encrypt.keyStore.location}
+    key-store-password: ${encrypt.keyStore.password}
+#    trust-store: ${encrypt.keyStore.location}
+#    trust-store-type: ${encrypt.keyStore.type}
+#    trust-store-password: ${encrypt.keyStore.password}
+
+spring:
+  application:
+    name: config-service
+  security:
+    user:
+      name: ${CONFIG_SERVICE_SECURITY_USER_NAME:config}
+      password: ${CONFIG_SERVICE_SECURITY_USER_PASSWORD:12345678}
+  profiles:
+    active: native, git
+  cloud:
+    config:
+      server:
+        native:
+          searchLocations: classpath:/shared
+        git:
+          uri: https://github.com/ndtao2020/spring-microservices-demo
+          # ========================= BASIC AUTHENTICATION =========================
+          # https://docs.spring.io/spring-cloud-config/docs/current/reference/html/#_authentication
+          # ========================================================================
+          # username: username
+          # password: 12345678x@X
+          # ========================= SSH configuration files =========================
+          # https://docs.spring.io/spring-cloud-config/docs/current/reference/html/#_git_ssh_configuration_using_properties
+
+info:
+  app:
+    version: ${spring.application.name}
+    description: ${spring.application.description}
+
+logging:
+  file:
+    path: ./logs
+    name: ${logging.file.path}/${spring.application.name}.log
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: "shutdown"
+  endpoint:
+    health:
+      show-details: always
+    logfile:
+      external_file: ${logging.file.name}

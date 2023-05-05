@@ -1,0 +1,37 @@
+server:
+  port: ${SPRING_ADMIN_SERVICE_PORT:8762}
+  servlet:
+    context-path: ${SPRING_ADMIN_SERVICE_CONTEXT_PATH:/}
+  ssl:
+    enabled: false # true: for HTTPS connections
+    key-alias: spring-admin
+    key-store: classpath:spring-admin.jks
+    key-store-password: 12345678
+
+spring:
+  security:
+    user:
+      name: ${SPRING_ADMIN_SERVICE_SECURITY_USER_NAME:spring-admin}
+      password: ${SPRING_ADMIN_SERVICE_SECURITY_USER_PASSWORD:12345678}
+  boot:
+    admin:
+      ui:
+        title: "Demo Microservices - Spring Boot Admin"
+      discovery:
+        enabled: true
+        services: "*"
+      instance-auth:
+        enabled: true
+        service-map:
+          config-service:
+            user-name: ${CONFIG_SERVICE_SECURITY_USER_NAME:config}
+            user-password: ${CONFIG_SERVICE_SECURITY_USER_PASSWORD:12345678}
+          spring-admin-service:
+            user-name: ${SPRING_ADMIN_SERVICE_SECURITY_USER_NAME:spring-admin}
+            user-password: ${SPRING_ADMIN_SERVICE_SECURITY_USER_PASSWORD:12345678}
+          discovery-service:
+            user-name: ${DISCOVERY_SERVICE_SECURITY_USER_NAME:discovery}
+            user-password: ${DISCOVERY_SERVICE_SECURITY_USER_PASSWORD:12345678}
+          gateway-service:
+            user-name: ${GATEWAY_SERVICE_SECURITY_USER_NAME:gateway}
+            user-password: ${GATEWAY_SERVICE_SECURITY_USER_PASSWORD:12345678}

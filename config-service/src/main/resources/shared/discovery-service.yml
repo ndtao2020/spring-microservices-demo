@@ -1,0 +1,57 @@
+server:
+  port: ${DISCOVERY_SERVICE_PORT:8761}
+  servlet:
+    context-path: ${DISCOVERY_SERVICE_CONTEXT_PATH:/}
+  ssl:
+    enabled: false # true: for HTTPS connections
+    key-alias: eureka
+    key-store: classpath:eureka.jks
+    key-store-password: 12345678
+
+logging:
+  level:
+    com:
+      netflix:
+        eureka: OFF
+        discovery: OFF
+
+eureka:
+  instance:
+    hostname: localhost
+    securePort: ${server.port}
+    securePortEnabled: true
+    nonSecurePortEnabled: false
+    homePageUrl: https://${eureka.instance.hostname}:${server.port}/
+    statusPageUrl: https://${eureka.instance.hostname}:${server.port}/admin/info
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+
+spring:
+  security:
+    user:
+      name: ${DISCOVERY_SERVICE_SECURITY_USER_NAME:discovery}
+      password: ${DISCOVERY_SERVICE_SECURITY_USER_PASSWORD:12345678}
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            # ============= CONFIG_SERVICE =============
+#            config-service:
+#              - uri: ${CONFIG_SERVICE_URI:http://localhost:8760}
+#                metadata:
+#                  management:
+#                    context-path: ${CONFIG_SERVICE_URI:http://localhost:8760}${CONFIG_SERVICE_CONTEXT_PATH:/}/actuator
+            # ============= GATEWAY_SERVICE =============
+            gateway-service:
+              - uri: ${GATEWAY_SERVICE_URI:http://localhost:8080}
+                metadata:
+                  management:
+                    context-path: ${GATEWAY_SERVICE_URI:http://localhost:8080}/actuator
+            # ============= SPRING_ADMIN_SERVICE =============
+            spring-admin-service:
+              - uri: ${SPRING_ADMIN_SERVICE_URI:http://localhost:8762}
+                metadata:
+                  management:
+                    context-path: ${SPRING_ADMIN_SERVICE_URI:http://localhost:8762}/actuator

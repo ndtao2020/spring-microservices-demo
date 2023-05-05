@@ -1,0 +1,69 @@
+server:
+  compression:
+    enabled: true
+  error:
+    include-message: always
+
+logging:
+  file:
+    path: ./logs
+    name: ${logging.file.path}/${spring.application.name}.log
+
+spring:
+  boot:
+    admin:
+      client:
+        url: ${SPRING_ADMIN_SERVICE_URI:http://localhost:8762}${SPRING_ADMIN_SERVICE_CONTEXT_PATH:/}
+        username: ${SPRING_ADMIN_SERVICE_SECURITY_USER_NAME:spring-admin}
+        password: ${SPRING_ADMIN_SERVICE_SECURITY_USER_PASSWORD:12345678}
+
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    status-page-url-path: /actuator/info
+    health-check-url-path: /actuator/health
+  client:
+    registryFetchIntervalSeconds: 5
+    serviceUrl:
+      defaultZone: ${DISCOVERY_SERVICE_AUTH_URI:http://discovery:12345678@localhost:8761}${DISCOVERY_SERVICE_CONTEXT_PATH:/}/eureka/
+
+info:
+  app:
+    version: ${spring.application.name}
+    description: ${spring.application.description}
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: "shutdown"
+  endpoint:
+    web:
+      discovery:
+        enabled: true
+    health:
+      show-details: ALWAYS
+      probes:
+        enabled: true
+    logfile:
+      external_file: ${logging.file.name}
+
+resilience4j.retry:
+  configs:
+    default:
+      registerHealthIndicator: true
+      maxRetryAttempts: 10
+      waitDuration: 5s
+      retryExceptions:
+        - org.springframework.web.client.ResourceAccessException
+        - org.springframework.web.client.HttpServerErrorException
+        - java.io.IOException
+        - java.util.concurrent.TimeoutException
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

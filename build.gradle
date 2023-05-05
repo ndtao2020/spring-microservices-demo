@@ -42,7 +42,7 @@ ext {
 	set('minioVersion', "8.5.2")
 	set('auth0JwtVersion', "4.4.0")
 	set('springCloudVersion', "2022.0.2")
-	set('springBootAdminVersion', "3.0.2")
+	set('springBootAdminVersion', "3.0.3")
 	set('testcontainersVersion', "1.18.0")
 	set('firebaseAdminVersion', "9.1.1")
 }
