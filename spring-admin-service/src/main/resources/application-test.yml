@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    discovery:
+      enabled: false
+  security:
+    user:
+      name: ${SPRING_ADMIN_SERVICE_SECURITY_USER_NAME:spring-admin}
+      password: ${SPRING_ADMIN_SERVICE_SECURITY_USER_PASSWORD:12345678}
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false

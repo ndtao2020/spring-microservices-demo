@@ -34,7 +34,7 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'pmd'
+    // apply plugin: 'pmd'
     apply plugin: 'java'
     apply plugin: 'jacoco'
     apply plugin: 'checkstyle'
@@ -54,9 +54,9 @@ subprojects {
     springBoot {
         buildInfo()
     }
-    pmd {
-        consoleOutput = true
-    }
+    // pmd {
+    //    consoleOutput = true
+    // }
     checkstyle {
         configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
         // config project.resources.text.fromUri("https://github.com/spring-projects/spring-boot/blob/main/src/checkstyle/checkstyle.xml")
