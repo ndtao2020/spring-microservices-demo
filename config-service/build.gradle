@@ -1,16 +1,11 @@
-plugins {
-    id 'pmd'
-    id 'java'
-    id 'org.springframework.boot'
-    id 'io.spring.dependency-management'
+application {
+    mainClass = 'com.microservice.example.config.ConfigServiceApplication'
 }
 
-repositories {
-    mavenCentral()
-}
-
-springBoot {
-    buildInfo()
+sonar {
+    properties {
+        property "sonar.projectName", "Config Service"
+    }
 }
 
 dependencies {
@@ -20,13 +15,6 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-config-server'
     implementation 'org.springframework.vault:spring-vault-core'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
 }
 
 tasks.named('test') {

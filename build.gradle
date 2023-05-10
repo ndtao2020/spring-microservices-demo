@@ -4,82 +4,86 @@ buildscript {
     }
     dependencies {
         classpath 'com.guardsquare:proguard-gradle:7.3.2'
-        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.5.0.2730'
     }
 }
 
 plugins {
-    id 'pmd'
-    id 'java'
-    id 'jacoco'
-    id 'checkstyle'
     id "me.champeau.jmh" version "0.7.1" apply false
     id 'org.sonarqube' version '4.0.0.2929' apply true
     id 'org.springframework.boot' version '3.0.6' apply false
     id 'io.spring.dependency-management' version '1.1.0' apply false
 }
 
-group = 'com.microservice.example'
-version = '1.0.0'
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-pmd {
-    consoleOutput = true
-}
-
-checkstyle {
-    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-    // config project.resources.text.fromUri("https://github.com/spring-projects/spring-boot/blob/main/src/checkstyle/checkstyle.xml")
-}
-
-checkstyleMain {
-    source = [
-            'config-service/src/main/java',
-            'discovery-service/src/main/java',
-            'gateway-service/src/main/java',
-            'spring-admin-service/src/main/java'
-    ]
-}
-
-checkstyleTest {
-    source = [
-            'config-service/src/test/java',
-            'discovery-service/src/test/java',
-            'gateway-service/src/test/java',
-            'spring-admin-service/src/test/java'
-    ]
-}
-
 repositories {
     mavenCentral()
-}
-
-sonarqube {
-    properties {
-        property "sonar.qualitygate.wait", true
-        property "sonar.sourceEncoding", "UTF_8"
-    }
 }
 
 ext {
     set('jmhVersion', "1.36")
     set('minioVersion', "8.5.2")
     set('auth0JwtVersion', "4.4.0")
+    set('firebaseAdminVersion', "9.1.1")
     set('springCloudVersion', "2022.0.2")
     set('springBootAdminVersion', "3.0.3")
     set('testcontainersVersion', "1.18.0")
-    set('firebaseAdminVersion', "9.1.1")
 }
 
-tasks.withType(Checkstyle).configureEach {
-    reports {
-        xml.required = true
-        html.required = true
+allprojects {
+    group = 'com.microservice.example'
+    version = '1.0.0'
+}
+
+subprojects {
+    apply plugin: 'pmd'
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+    apply plugin: 'checkstyle'
+    apply plugin: 'application'
+    apply plugin: 'org.sonarqube'
+    apply plugin: 'me.champeau.jmh'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    repositories {
+        mavenCentral()
+        maven { url 'https://artifactory-oss.prod.netflix.net/artifactory/maven-oss-candidates' }
+    }
+    springBoot {
+        buildInfo()
+    }
+    pmd {
+        consoleOutput = true
+    }
+    checkstyle {
+        configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+        // config project.resources.text.fromUri("https://github.com/spring-projects/spring-boot/blob/main/src/checkstyle/checkstyle.xml")
+    }
+    checkstyleMain {
+        source = 'src/main/java'
+    }
+    checkstyleTest {
+        source = 'src/test/java'
+    }
+    sonar {
+        properties {
+            property "sonar.sources", "src"
+        }
+    }
+    dependencyManagement {
+        imports {
+            mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "Example of Microservice for Gradle"
+        property "sonar.qualitygate.wait", true
+        property "sonar.sourceEncoding", "UTF_8"
     }
 }

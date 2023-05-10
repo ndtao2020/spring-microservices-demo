@@ -1,13 +1,11 @@
-plugins {
-    id 'pmd'
-    id 'java'
-    id 'org.springframework.boot'
-    id 'io.spring.dependency-management'
+application {
+    mainClass = 'com.microservice.example.springadmin.SpringAdminApplication'
 }
 
-repositories {
-    mavenCentral()
-    maven { url 'https://artifactory-oss.prod.netflix.net/artifactory/maven-oss-candidates' }
+sonar {
+    properties {
+        property "sonar.projectName", "Spring Admin Service"
+    }
 }
 
 dependencies {
@@ -20,13 +18,6 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
 }
 
 tasks.named('test') {
