@@ -52,7 +52,8 @@ spring:
   security:
     user:
       name: ${CONFIG_SERVICE_SECURITY_USER_NAME:config}
-      password: ${CONFIG_SERVICE_SECURITY_USER_PASSWORD:12345678}
+      # password: ${CONFIG_SERVICE_SECURITY_USER_PASSWORD:12345678}
+      password: ${CONFIG_SERVICE_SECURITY_USER_PASSWORD:{bcrypt}$2a$10$E5BoxJqq.znFd6EiYTZYXeQkzmKN1gQ.CEBRP56n4xH91l2vVMzgq}
   profiles:
     active: native, git
   cloud:
@@ -62,6 +63,7 @@ spring:
           searchLocations: classpath:/shared
         git:
           uri: https://github.com/ndtao2020/spring-microservices-demo
+          clone-on-start: true
           # ========================= BASIC AUTHENTICATION =========================
           # https://docs.spring.io/spring-cloud-config/docs/current/reference/html/#_authentication
           # ========================================================================

@@ -31,7 +31,8 @@ spring:
   security:
     user:
       name: ${DISCOVERY_SERVICE_SECURITY_USER_NAME:discovery}
-      password: ${DISCOVERY_SERVICE_SECURITY_USER_PASSWORD:12345678}
+      # password: ${DISCOVERY_SERVICE_SECURITY_USER_PASSWORD:12345678}
+      password: ${DISCOVERY_SERVICE_SECURITY_USER_PASSWORD:{bcrypt}$2a$10$7MR0UdShubS9RGCfmDXz.uyKRECVUxUjHwb16QgvYbWDMMBf1z5tK}
   cloud:
     discovery:
       client:

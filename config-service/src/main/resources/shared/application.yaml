@@ -43,6 +43,8 @@ management:
         exclude: "shutdown"
   endpoint:
     web:
+      gateway:
+        enabled: true
       discovery:
         enabled: true
     health:
@@ -51,18 +53,6 @@ management:
         enabled: true
     logfile:
       external_file: ${logging.file.name}
-
-resilience4j.retry:
-  configs:
-    default:
-      registerHealthIndicator: true
-      maxRetryAttempts: 10
-      waitDuration: 5s
-      retryExceptions:
-        - org.springframework.web.client.ResourceAccessException
-        - org.springframework.web.client.HttpServerErrorException
-        - java.io.IOException
-        - java.util.concurrent.TimeoutException
 
 springdoc:
   swagger-ui:

@@ -12,7 +12,8 @@ spring:
   security:
     user:
       name: ${SPRING_ADMIN_SERVICE_SECURITY_USER_NAME:spring-admin}
-      password: ${SPRING_ADMIN_SERVICE_SECURITY_USER_PASSWORD:12345678}
+      # password: ${SPRING_ADMIN_SERVICE_SECURITY_USER_PASSWORD:12345678}
+      password: ${SPRING_ADMIN_SERVICE_SECURITY_USER_PASSWORD:{bcrypt}$2a$10$DfQ6YYNBd8GHi1xK1jkrje/CVDedpAVS1TTJfNBMLPLYuFhQtaW7i}
   boot:
     admin:
       ui:

@@ -59,7 +59,7 @@ subprojects {
     // }
     checkstyle {
         configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-        // config project.resources.text.fromUri("https://github.com/spring-projects/spring-boot/blob/main/src/checkstyle/checkstyle.xml")
+        // config project.resources.text.fromUri("https://raw.githubusercontent.com/spring-cloud/spring-cloud-build/master/spring-cloud-build-tools/src/main/resources/checkstyle.xml")
     }
     checkstyleMain {
         source = 'src/main/java'
