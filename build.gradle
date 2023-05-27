@@ -8,7 +8,9 @@ buildscript {
 }
 
 plugins {
-    id "me.champeau.jmh" version "0.7.1" apply false
+    id "java"
+    id "application"
+    id "me.champeau.jmh" version "0.7.1"
     id 'org.sonarqube' version '4.0.0.2929' apply true
     id 'org.springframework.boot' version '3.1.0' apply false
     id 'io.spring.dependency-management' version '1.1.0' apply false
@@ -22,12 +24,12 @@ repositories {
 
 ext {
     set('jmhVersion', "1.36")
-    set('minioVersion', "8.5.2")
+    set('minioVersion', "8.5.3")
     set('auth0JwtVersion', "4.4.0")
+    set('jsonwebtokenVersion', "0.11.5")
     set('firebaseAdminVersion', "9.1.1")
     set('springdocVersion', "1.7.0")
-    set('springCloudVersion', "2022.0.2")
-    set('springSecurityVersion', "1.0.2")
+    set('springCloudVersion', "2022.0.3")
     set('springBootAdminVersion', "3.0.3")
     set('testcontainersVersion', "1.18.0")
 }
@@ -37,6 +39,15 @@ allprojects {
     version = '1.0.0'
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+application {
+    mainClass = 'com.microservice.example.Application'
+}
+
 subprojects {
     // apply plugin: 'pmd'
     apply plugin: 'java'
@@ -44,7 +55,6 @@ subprojects {
     apply plugin: 'checkstyle'
     apply plugin: 'application'
     apply plugin: 'org.sonarqube'
-    apply plugin: 'me.champeau.jmh'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.springdoc.openapi-gradle-plugin'
@@ -94,4 +104,23 @@ sonarqube {
         property "sonar.qualitygate.wait", true
         property "sonar.sourceEncoding", "UTF_8"
     }
+}
+
+dependencies {
+    jmh "org.openjdk.jmh:jmh-core:${jmhVersion}"
+    jmh "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
+    // libraries of jwt
+    implementation "com.auth0:java-jwt:${auth0JwtVersion}"
+    implementation "org.bitbucket.b_c:jose4j:0.9.3"
+    implementation "com.nimbusds:nimbus-jose-jwt:9.31"
+    implementation 'io.fusionauth:fusionauth-jwt:5.2.3'
+    implementation "io.jsonwebtoken:jjwt-api:${jsonwebtokenVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
+}
+
+jmh {
+    warmupIterations = 2
+    iterations = 5
+    fork = 1
 }

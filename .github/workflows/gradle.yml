@@ -39,3 +39,5 @@ jobs:
         run: chmod +x ./gradlew
       - name: Execute Gradle build
         run: ./gradlew clean build -Pprod --info --scan
+      - name: Execute Benchmarks
+        run: ./gradlew jmh
