@@ -93,3 +93,7 @@ management:
       show-details: always
     logfile:
       external_file: ${logging.file.name}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

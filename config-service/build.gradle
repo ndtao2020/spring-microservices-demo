@@ -10,6 +10,7 @@ sonar {
 
 dependencies {
     implementation 'de.codecentric:spring-boot-admin-starter-client'
+    implementation "org.springdoc:springdoc-openapi-ui:${springdocVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.cloud:spring-cloud-config-server'

@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: oauth-authorization-server
+  config:
+    import: optional:configserver:${CONFIG_SERVICE_AUTH_URI:http://config:12345678@localhost:8760}${CONFIG_SERVICE_CONTEXT_PATH:/}

@@ -1,6 +1,7 @@
 include 'config-service'
 include 'discovery-service'
 include 'gateway-service'
+include 'oauth2-authorization-server'
 include 'spring-admin-service'
 
 rootProject.name = "spring-microservices-demo"

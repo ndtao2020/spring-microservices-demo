@@ -1,0 +1,4 @@
+server:
+  port: ${OAUTH_AUTHORIZATION_SERVER_PORT:8763}
+  servlet:
+    context-path: ${OAUTH_AUTHORIZATION_SERVER_CONTEXT_PATH:/}

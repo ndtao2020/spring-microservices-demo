@@ -12,10 +12,12 @@ plugins {
     id 'org.sonarqube' version '4.0.0.2929' apply true
     id 'org.springframework.boot' version '3.0.6' apply false
     id 'io.spring.dependency-management' version '1.1.0' apply false
+    id 'org.springdoc.openapi-gradle-plugin' version '1.6.0' apply false
 }
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
 }
 
 ext {
@@ -23,7 +25,9 @@ ext {
     set('minioVersion', "8.5.2")
     set('auth0JwtVersion', "4.4.0")
     set('firebaseAdminVersion', "9.1.1")
+    set('springdocVersion', "1.7.0")
     set('springCloudVersion', "2022.0.2")
+    set('springSecurityVersion', "1.0.2")
     set('springBootAdminVersion', "3.0.3")
     set('testcontainersVersion', "1.18.0")
 }
@@ -43,13 +47,17 @@ subprojects {
     apply plugin: 'me.champeau.jmh'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springdoc.openapi-gradle-plugin'
     java {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
     repositories {
         mavenCentral()
-        maven { url 'https://artifactory-oss.prod.netflix.net/artifactory/maven-oss-candidates' }
+        gradlePluginPortal()
+        maven {
+            url 'https://artifactory-oss.prod.netflix.net/artifactory/maven-oss-candidates'
+        }
     }
     springBoot {
         buildInfo()
