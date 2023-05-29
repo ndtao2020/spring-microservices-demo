@@ -2,12 +2,16 @@ package com.microservice.example.json;
 
 import com.alibaba.fastjson2.JSON;
 import com.cedarsoftware.util.io.JsonWriter;
+import com.dslplatform.json.DslJson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +26,10 @@ class MapToJsonUnitTest {
         data.put("CS", "Post1");
         data.put("Linux", "Post1");
         data.put("Kotlin", "Post1");
+    }
+
+    @AfterAll
+    static void tearDownAll() {
     }
 
     @BeforeEach
@@ -63,11 +71,17 @@ class MapToJsonUnitTest {
         Assertions.assertEquals(originalJsonData, JSON.toJSONString(data));
     }
 
-    @AfterEach
-    void tearDown() {
+    @Test
+    @DisplayName("Map to Json: DslJson")
+    void given_HashMapData_whenDslJson_thenConvertToJsonUsing() throws IOException {
+        DslJson<Object> json = new DslJson<>();
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+            json.serialize(data, stream); //will use thread local writer
+            Assertions.assertEquals(originalJsonData, stream.toString(StandardCharsets.UTF_8));
+        }
     }
 
-    @AfterAll
-    static void tearDownAll() {
+    @AfterEach
+    void tearDown() {
     }
 }

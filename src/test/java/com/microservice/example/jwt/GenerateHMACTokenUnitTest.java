@@ -2,7 +2,6 @@ package com.microservice.example.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.microservice.example.jwt.hmac.JwtBuilder;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -15,6 +14,12 @@ import io.fusionauth.jwt.hmac.HMACSigner;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.JWTOptions;
+import io.vertx.ext.auth.PubSecKeyOptions;
+import io.vertx.ext.auth.jwt.JWTAuth;
+import io.vertx.ext.auth.jwt.JWTAuthOptions;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
@@ -24,6 +29,7 @@ import org.jose4j.lang.JoseException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -43,20 +49,21 @@ class GenerateHMACTokenUnitTest {
     private static final String ISSUER = "https://taoqn.pages.dev";
     private static final String SUBJECT = "ndtao2020";
 
-    private final byte[] secretBytes = "IJTD@MFc7yUa5MhvcP03n#JPyCPzZtQcGEpz".getBytes(StandardCharsets.UTF_8);
+    private final String secret = "IJTD@MFc7yUa5MhvcP03n#JPyCPzZtQcGEpz";
+    private final byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
     private final Date expiresAt = new Date(System.currentTimeMillis() + (60 * 60 * 1000));
     private final NumericDate numericDate = NumericDate.fromMilliseconds(expiresAt.getTime());
     private final ZonedDateTime zoneExpiresAt = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(60);
 
     @Test
-    void customJWT() throws NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+    void customJWT() throws NoSuchAlgorithmException, InvalidKeyException, IOException {
         JwtBuilder jwtBuilder = new JwtBuilder(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
 
         Map<String, Object> map = new HashMap<>();
         map.put(Claims.JWT_ID, JWT_ID);
         map.put(Claims.ISSUER, ISSUER);
         map.put(Claims.SUBJECT, SUBJECT);
-        map.put(Claims.EXPIRES_AT, expiresAt);
+        map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
 
         String token = jwtBuilder.compact(map);
 
@@ -131,6 +138,28 @@ class GenerateHMACTokenUnitTest {
         jwe.setKey(new HmacKey(secretBytes));
 
         String token = jwe.getCompactSerialization();
+
+        assertNotNull(token);
+    }
+
+    @Test
+    void vertxAuthJwt() {
+        JWTOptions options = new JWTOptions();
+        options.setIssuer(ISSUER);
+        options.setAlgorithm("HS256");
+        options.setSubject(SUBJECT);
+        options.setExpiresInSeconds((int) (expiresAt.getTime() / 1000));
+
+        JWTAuthOptions config = new JWTAuthOptions()
+                .addPubSecKey(new PubSecKeyOptions().setAlgorithm("HS256").setBuffer(secret))
+                .setJWTOptions(options);
+
+        JWTAuth provider = JWTAuth.create(Vertx.vertx(), config);
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put(Claims.JWT_ID, JWT_ID);
+
+        String token = provider.generateToken(jsonObject);
 
         assertNotNull(token);
     }
