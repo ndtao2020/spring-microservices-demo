@@ -19,6 +19,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repository.apache.org/snapshots' }
     gradlePluginPortal()
 }
 
@@ -28,6 +29,8 @@ ext {
     set('auth0JwtVersion', "4.4.0")
     set('jsonwebtokenVersion', "0.11.5")
     set('firebaseAdminVersion', "9.1.1")
+    set('junitVersion', "5.9.3")
+    set('log4jVersion', "2.20.0")
     set('springdocVersion', "1.7.0")
     set('springCloudVersion', "2022.0.3")
     set('springBootAdminVersion', "3.0.3")
@@ -109,6 +112,11 @@ sonarqube {
 dependencies {
     jmh "org.openjdk.jmh:jmh-core:${jmhVersion}"
     jmh "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
+    // libraries of json
+    implementation "org.json:json:20230227"
+    implementation "com.google.code.gson:gson:2.10.1"
+    implementation 'com.alibaba.fastjson2:fastjson2:2.0.32'
+    implementation 'com.cedarsoftware:json-io:4.14.0'
     // libraries of jwt
     implementation "com.auth0:java-jwt:${auth0JwtVersion}"
     implementation "org.bitbucket.b_c:jose4j:0.9.3"
@@ -117,10 +125,24 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-api:${jsonwebtokenVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
+    // Log4j
+    implementation platform("org.apache.logging.log4j:log4j-bom:${log4jVersion}")
+    implementation "org.apache.logging.log4j:log4j-api"
+    runtimeOnly "org.apache.logging.log4j:log4j-core"
+    // testings
+    testImplementation platform("org.junit:junit-bom:${junitVersion}")
+    testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
 jmh {
     warmupIterations = 2
     iterations = 5
     fork = 1
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }

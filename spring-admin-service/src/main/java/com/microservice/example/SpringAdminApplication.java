@@ -1,4 +1,4 @@
-package com.microservice.example.springadmin;
+package com.microservice.example;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import org.springframework.boot.SpringApplication;

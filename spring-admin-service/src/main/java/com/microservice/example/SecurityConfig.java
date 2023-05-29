@@ -1,4 +1,4 @@
-package com.microservice.example.springadmin;
+package com.microservice.example;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

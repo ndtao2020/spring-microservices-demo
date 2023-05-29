@@ -1,9 +1,8 @@
-package com.microservice.benchmark.jwt.hmac;
+package com.microservice.example.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.microservice.example.jwt.Claims;
 import com.microservice.example.jwt.hmac.JwtBuilder;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -22,7 +21,8 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.NumericDate;
 import org.jose4j.keys.HmacKey;
 import org.jose4j.lang.JoseException;
-import org.openjdk.jmh.annotations.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -33,12 +33,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-@State(Scope.Benchmark)
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class GenerateTokenHS256 {
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@DisplayName("Generate a Token with HMAC - Test case")
+class GenerateHMACTokenUnitTest {
 
     private static final String JWT_ID = UUID.randomUUID().toString();
     private static final String ISSUER = "https://taoqn.pages.dev";
@@ -49,8 +48,8 @@ public class GenerateTokenHS256 {
     private final NumericDate numericDate = NumericDate.fromMilliseconds(expiresAt.getTime());
     private final ZonedDateTime zoneExpiresAt = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(60);
 
-    @Benchmark
-    public String customJWT() throws NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+    @Test
+    void customJWT() throws NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
         JwtBuilder jwtBuilder = new JwtBuilder(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
 
         Map<String, Object> map = new HashMap<>();
@@ -59,32 +58,37 @@ public class GenerateTokenHS256 {
         map.put(Claims.SUBJECT, SUBJECT);
         map.put(Claims.EXPIRES_AT, expiresAt);
 
-        return jwtBuilder.compact(map);
+        String token = jwtBuilder.compact(map);
+
+        assertNotNull(token);
     }
 
-    @Benchmark
-    public String auth0JWT() {
-        return JWT.create()
+    @Test
+    void auth0JWT() {
+        String token = JWT.create()
                 .withJWTId(JWT_ID)
                 .withIssuer(ISSUER)
                 .withSubject(SUBJECT)
                 .withExpiresAt(expiresAt)
                 .sign(Algorithm.HMAC256(secretBytes));
+        assertNotNull(token);
     }
 
-    @Benchmark
-    public String jsonWebToken() {
-        return Jwts.builder()
+    @Test
+    void jsonWebToken() {
+        String token = Jwts.builder()
                 .setId(JWT_ID)
                 .setIssuer(ISSUER)
                 .setSubject(SUBJECT)
                 .setExpiration(expiresAt)
                 .signWith(Keys.hmacShaKeyFor(secretBytes), SignatureAlgorithm.HS256)
                 .compact();
+
+        assertNotNull(token);
     }
 
-    @Benchmark
-    public String nimbusJoseJWT() throws JOSEException {
+    @Test
+    void nimbusJoseJWT() throws JOSEException {
         SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), new JWTClaimsSet.Builder()
                 .jwtID(JWT_ID)
                 .issuer(ISSUER)
@@ -92,11 +96,14 @@ public class GenerateTokenHS256 {
                 .expirationTime(expiresAt)
                 .build());
         signedJWT.sign(new MACSigner(secretBytes));
-        return signedJWT.serialize();
+
+        String token = signedJWT.serialize();
+
+        assertNotNull(token);
     }
 
-    @Benchmark
-    public String fusionAuth() {
+    @Test
+    void fusionAuth() {
         Signer signer = HMACSigner.newSHA256Signer(secretBytes);
         io.fusionauth.jwt.domain.JWT jwt = new io.fusionauth.jwt.domain.JWT()
                 .setUniqueId(JWT_ID)
@@ -104,11 +111,13 @@ public class GenerateTokenHS256 {
                 .setSubject(SUBJECT)
                 .setExpiration(zoneExpiresAt);
         // Sign and encode the JWT to a JSON string representation
-        return io.fusionauth.jwt.domain.JWT.getEncoder().encode(jwt, signer);
+        String token = io.fusionauth.jwt.domain.JWT.getEncoder().encode(jwt, signer);
+
+        assertNotNull(token);
     }
 
-    @Benchmark
-    public String bitbucketBC() throws JoseException {
+    @Test
+    void bitbucketBC() throws JoseException {
         // Create the Claims, which will be the content of the JWT
         JwtClaims claims = new JwtClaims();
         claims.setJwtId(JWT_ID);
@@ -120,6 +129,9 @@ public class GenerateTokenHS256 {
         jwe.setPayload(claims.toJson());
         jwe.setAlgorithmHeaderValue(AlgorithmIdentifiers.HMAC_SHA256);
         jwe.setKey(new HmacKey(secretBytes));
-        return jwe.getCompactSerialization();
+
+        String token = jwe.getCompactSerialization();
+
+        assertNotNull(token);
     }
 }
