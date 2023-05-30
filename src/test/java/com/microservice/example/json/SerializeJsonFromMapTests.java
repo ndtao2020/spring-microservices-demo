@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @DisplayName("Map to Json - Test case")
-class MapToJsonUnitTest {
+class SerializeJsonFromMapTests {
 
     static String originalJsonData = "{\"CS\":\"Post1\",\"Linux\":\"Post1\",\"Kotlin\":\"Post1\"}";
     static Map<String, String> data = new HashMap<>();

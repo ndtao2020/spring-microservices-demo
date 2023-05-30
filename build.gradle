@@ -29,6 +29,7 @@ ext {
     set('auth0JwtVersion', "4.4.0")
     set('jsonwebtokenVersion', "0.11.5")
     set('firebaseAdminVersion', "9.1.1")
+    set('lombokVersion', "1.18.28")
     set('junitVersion', "5.9.3")
     set('log4jVersion', "2.20.0")
     set('springdocVersion', "1.7.0")
@@ -112,6 +113,9 @@ sonarqube {
 dependencies {
     jmh "org.openjdk.jmh:jmh-core:${jmhVersion}"
     jmh "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
+    // lombok
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     // libraries of json
     implementation "org.json:json:20230227"
     implementation "com.google.code.gson:gson:2.10.1"
@@ -136,6 +140,8 @@ dependencies {
     // testings
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
 
 jmh {

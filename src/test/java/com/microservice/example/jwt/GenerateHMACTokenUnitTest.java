@@ -2,6 +2,7 @@ package com.microservice.example.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.hmac.JwtBuilder;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -29,7 +30,6 @@ import org.jose4j.lang.JoseException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -38,25 +38,24 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DisplayName("Generate a Token with HMAC - Test case")
 class GenerateHMACTokenUnitTest {
 
-    private static final String JWT_ID = UUID.randomUUID().toString();
+    private static final String JWT_ID = RandomUtils.generateId(20);
     private static final String ISSUER = "https://taoqn.pages.dev";
     private static final String SUBJECT = "ndtao2020";
 
-    private final String secret = "IJTD@MFc7yUa5MhvcP03n#JPyCPzZtQcGEpz";
+    private final String secret = RandomUtils.generatePassword(50);
     private final byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
     private final Date expiresAt = new Date(System.currentTimeMillis() + (60 * 60 * 1000));
     private final NumericDate numericDate = NumericDate.fromMilliseconds(expiresAt.getTime());
     private final ZonedDateTime zoneExpiresAt = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(60);
 
     @Test
-    void customJWT() throws NoSuchAlgorithmException, InvalidKeyException, IOException {
+    void customJWT() throws NoSuchAlgorithmException, InvalidKeyException {
         JwtBuilder jwtBuilder = new JwtBuilder(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
 
         Map<String, Object> map = new HashMap<>();

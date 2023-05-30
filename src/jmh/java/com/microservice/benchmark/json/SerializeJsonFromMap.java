@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
-@BenchmarkMode({Mode.All})
+@BenchmarkMode({Mode.AverageTime, Mode.SingleShotTime})
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class MapToJson {
+public class SerializeJsonFromMap {
 
     public Map<String, String> data = new HashMap<>();
 
@@ -31,24 +31,24 @@ public class MapToJson {
 
     @Benchmark
     public String jackson() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        final ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(data);
     }
 
     @Benchmark
     public String gson() {
-        Gson gson = new Gson();
+        final Gson gson = new Gson();
         return gson.toJson(data);
     }
 
     @Benchmark
     public String jSONObject() {
-        JSONObject jsonObject = new JSONObject(data);
+        final JSONObject jsonObject = new JSONObject(data);
         return jsonObject.toString();
     }
 
     @Benchmark
-    public String jsonIO() {
+    public String cedarJsonIO() {
         return JsonWriter.objectToJson(data, Map.of(JsonWriter.TYPE, false));
     }
 
@@ -59,7 +59,7 @@ public class MapToJson {
 
     @Benchmark
     public String dslJson() throws IOException {
-        DslJson<Object> json = new DslJson<>();
+        final DslJson<Object> json = new DslJson<>();
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
             json.serialize(data, stream);
             return stream.toString(StandardCharsets.UTF_8);

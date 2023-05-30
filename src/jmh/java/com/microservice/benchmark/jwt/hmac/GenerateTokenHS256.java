@@ -2,6 +2,7 @@ package com.microservice.benchmark.jwt.hmac;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Claims;
 import com.microservice.example.jwt.hmac.JwtBuilder;
 import com.nimbusds.jose.JOSEException;
@@ -29,7 +30,6 @@ import org.jose4j.keys.HmacKey;
 import org.jose4j.lang.JoseException;
 import org.openjdk.jmh.annotations.*;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -42,29 +42,29 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
-@BenchmarkMode({Mode.All})
+@BenchmarkMode({Mode.AverageTime, Mode.SingleShotTime})
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class GenerateTokenHS256 {
 
-    private static final String JWT_ID = UUID.randomUUID().toString();
+    private static final String JWT_ID = RandomUtils.generateId(20);
     private static final String ISSUER = "https://taoqn.pages.dev";
     private static final String SUBJECT = "ndtao2020";
 
-    private final String secret = "IJTD@MFc7yUa5MhvcP03n#JPyCPzZtQcGEpz";
+    private final String secret = RandomUtils.generatePassword(50);
     private final byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
     private final Date expiresAt = new Date(System.currentTimeMillis() + (60 * 60 * 1000));
     private final NumericDate numericDate = NumericDate.fromMilliseconds(expiresAt.getTime());
     private final ZonedDateTime zoneExpiresAt = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(60);
 
     @Benchmark
-    public String customJWT() throws NoSuchAlgorithmException, InvalidKeyException, IOException {
+    public String customJWT() throws NoSuchAlgorithmException, InvalidKeyException {
         JwtBuilder jwtBuilder = new JwtBuilder(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
 
         Map<String, Object> map = new HashMap<>();
         map.put(Claims.JWT_ID, JWT_ID);
         map.put(Claims.ISSUER, ISSUER);
         map.put(Claims.SUBJECT, SUBJECT);
-        map.put(Claims.EXPIRES_AT, expiresAt);
+        map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
 
         return jwtBuilder.compact(map);
     }
