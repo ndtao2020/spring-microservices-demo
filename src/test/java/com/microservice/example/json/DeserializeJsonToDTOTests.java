@@ -1,21 +1,36 @@
 package com.microservice.example.json;
 
 import com.alibaba.fastjson2.JSON;
+import com.cedarsoftware.util.io.JsonObject;
+import com.cedarsoftware.util.io.JsonReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.dto.LoginDTO;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class DeserializeJsonToDTOTests {
 
-    private final String jsonValue = "{\"email\":\"ndtao2020@yopmail.com\",\"username\":\"ndtao2020\",\"password\":\"" + RandomUtils.generatePassword(50) + "\"}";
+    public static LoginDTO loginDTO = new LoginDTO();
+    public static String jsonValue = null;
+
+    @BeforeAll
+    static void initAll() {
+        // init data
+        loginDTO.setEmail("ndtao2020@yopmail.com");
+        loginDTO.setUsername("ndtao2020");
+        loginDTO.setPassword(RandomUtils.generatePassword(50));
+        // Serialize Json
+        jsonValue = JSON.toJSONString(loginDTO);
+    }
 
     @Test
     @DisplayName("Deserialize Json To DTO: Jackson")
@@ -23,6 +38,7 @@ class DeserializeJsonToDTOTests {
         final ObjectMapper objectMapper = new ObjectMapper();
         LoginDTO dto = objectMapper.readValue(jsonValue, LoginDTO.class);
         assertNotNull(dto);
+        assertEquals(loginDTO, dto);
     }
 
     @Test
@@ -31,39 +47,42 @@ class DeserializeJsonToDTOTests {
         final Gson gson = new Gson();
         LoginDTO dto = gson.fromJson(jsonValue, LoginDTO.class);
         assertNotNull(dto);
+        assertEquals(loginDTO, dto);
     }
 
     @Test
     @DisplayName("Deserialize Json To DTO: JSONObject")
     void jSONObject() {
         final JSONObject jsonObject = new JSONObject(jsonValue);
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setEmail(jsonObject.getString("email"));
-        loginDTO.setUsername(jsonObject.getString("username"));
-        loginDTO.setPassword(jsonObject.getString("password"));
 
-        assertNotNull(loginDTO);
+        LoginDTO dto = new LoginDTO();
+        dto.setEmail(jsonObject.getString("email"));
+        dto.setUsername(jsonObject.getString("username"));
+        dto.setPassword(jsonObject.getString("password"));
+
+        assertNotNull(dto);
+        assertEquals(loginDTO, dto);
     }
 
-//    @Test
-//    @DisplayName("Deserialize Json To DTO: Cedar Software json-io")
-//    void cedarJsonIO() {
-//        LoginDTO dto = (LoginDTO) JsonReader.jsonToJava(jsonValue);
-//        assertNotNull(dto);
-//    }
+    @Test
+    @DisplayName("Deserialize Json To DTO: Cedar Software json-io")
+    void cedarJsonIO() {
+        JsonObject<String, Object> jsonObject = (JsonObject) JsonReader.jsonToJava(jsonValue);
+
+        LoginDTO dto = new LoginDTO();
+        dto.setEmail(jsonObject.get("email").toString());
+        dto.setUsername(jsonObject.get("username").toString());
+        dto.setPassword(jsonObject.get("password").toString());
+
+        assertNotNull(dto);
+        assertEquals(loginDTO, dto);
+    }
 
     @Test
     @DisplayName("Deserialize Json To DTO: Alibaba fastjson2")
     void alibabaFastjson2() {
-        assertNotNull(JSON.parseObject(jsonValue, LoginDTO.class));
+        LoginDTO dto = JSON.parseObject(jsonValue, LoginDTO.class);
+        assertNotNull(dto);
+        assertEquals(loginDTO, dto);
     }
-
-//    @Test
-//    @DisplayName("Deserialize Json To DTO: DslJson")
-//    void dslJson() throws IOException {
-//        final DslJson<Object> json = new DslJson<>();
-//        byte[] bytes = jsonValue.getBytes(StandardCharsets.UTF_8);
-//        com.dslplatform.json.JsonReader<Object> reader = json.newReader().process(bytes, bytes.length);
-//        assertNotNull(reader.next(LoginDTO.class, new LoginDTO()));
-//    }
 }

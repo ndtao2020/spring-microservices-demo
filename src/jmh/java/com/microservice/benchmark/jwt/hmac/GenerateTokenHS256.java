@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Claims;
-import com.microservice.example.jwt.hmac.JwtBuilder;
+import com.microservice.example.jwt.hmac.HMACJwtBuilder;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -38,7 +38,6 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
@@ -58,7 +57,7 @@ public class GenerateTokenHS256 {
 
     @Benchmark
     public String customJWT() throws NoSuchAlgorithmException, InvalidKeyException {
-        JwtBuilder jwtBuilder = new JwtBuilder(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
+        HMACJwtBuilder jwtBuilder = new HMACJwtBuilder(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
 
         Map<String, Object> map = new HashMap<>();
         map.put(Claims.JWT_ID, JWT_ID);

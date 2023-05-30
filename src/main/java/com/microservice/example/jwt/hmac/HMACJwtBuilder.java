@@ -15,18 +15,18 @@ import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class JwtBuilder {
+public class HMACJwtBuilder {
 
     public static final String DELIMITER = ".";
     private final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
     private final SecretKey secretKey;
     private final Algorithm algorithm;
 
-    public JwtBuilder(String secretKey, Algorithm algorithm) {
+    public HMACJwtBuilder(String secretKey, Algorithm algorithm) {
         this(secretKey.getBytes(UTF_8), algorithm);
     }
 
-    public JwtBuilder(byte[] secretKeyBytes, Algorithm algorithm) {
+    public HMACJwtBuilder(byte[] secretKeyBytes, Algorithm algorithm) {
         this.secretKey = new SecretKeySpec(secretKeyBytes, algorithm.getJcaName());
         this.algorithm = algorithm;
     }

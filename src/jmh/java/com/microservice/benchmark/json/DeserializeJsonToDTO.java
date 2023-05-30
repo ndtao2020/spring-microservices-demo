@@ -1,6 +1,8 @@
 package com.microservice.benchmark.json;
 
 import com.alibaba.fastjson2.JSON;
+import com.cedarsoftware.util.io.JsonObject;
+import com.cedarsoftware.util.io.JsonReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.microservice.example.RandomUtils;
@@ -40,22 +42,20 @@ public class DeserializeJsonToDTO {
         return loginDTO;
     }
 
-//    @Benchmark
-//    public LoginDTO cedarJsonIO() {
-//        return (LoginDTO) JsonReader.jsonToJava(jsonValue);
-//    }
+    @Benchmark
+    public LoginDTO cedarJsonIO() {
+        JsonObject<String, Object> jsonObject = (JsonObject) JsonReader.jsonToJava(jsonValue);
+
+        LoginDTO dto = new LoginDTO();
+        dto.setEmail(jsonObject.get("email").toString());
+        dto.setUsername(jsonObject.get("username").toString());
+        dto.setPassword(jsonObject.get("password").toString());
+
+        return dto;
+    }
 
     @Benchmark
     public LoginDTO alibabaFastjson2() {
         return JSON.parseObject(jsonValue, LoginDTO.class);
     }
-
-//    @Benchmark
-//    public LoginDTO dslJson() throws IOException {
-//        final DslJson<Object> json = new DslJson<>();
-//        byte[] bytes = jsonValue.getBytes(StandardCharsets.UTF_8);
-//        com.dslplatform.json.JsonReader<Object> reader = json.newReader().process(bytes, bytes.length);
-//        LoginDTO instance = new LoginDTO(); //can be reused
-//        return reader.next(LoginDTO.class, instance); //bound is the same as instance above
-//    }
 }

@@ -1,7 +1,7 @@
 package com.microservice.example.jwt.hmac;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.microservice.example.jwt.Algorithm;
 
 import javax.crypto.Mac;
@@ -16,33 +16,28 @@ import java.util.Base64;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class JwtParser {
+public class HMACJwtParser {
 
     private final Base64.Decoder decoder = Base64.getUrlDecoder();
-    private final ObjectMapper mapper = new ObjectMapper();
     private final SecretKey secretKey;
     private final Algorithm algorithm;
 
-    public JwtParser(String secretKey, Algorithm algorithm) {
+    public HMACJwtParser(String secretKey, Algorithm algorithm) {
         this(secretKey.getBytes(UTF_8), algorithm);
     }
 
-    public JwtParser(byte[] secretKeyBytes, Algorithm algorithm) {
+    public HMACJwtParser(byte[] secretKeyBytes, Algorithm algorithm) {
         this.secretKey = new SecretKeySpec(secretKeyBytes, algorithm.getJcaName());
         this.algorithm = algorithm;
     }
 
-    public JsonNode verify(String t) {
-        try {
-            String[] r = t.split("\\" + com.microservice.example.jwt.rsa.JwtBuilder.DELIMITER);
-            byte[] n = r[1].getBytes(StandardCharsets.UTF_8);
-            if (!verifySignature(r[0].getBytes(StandardCharsets.UTF_8), n, decoder.decode(r[2]))) {
-                throw new SignatureException("Token is invalid !");
-            }
-            return mapper.readTree(decoder.decode(n));
-        } catch (Exception e) {
-            throw new SecurityException(e.getMessage());
+    public JSONObject verify(String token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        String[] r = token.split("\\" + HMACJwtBuilder.DELIMITER);
+        byte[] n = r[1].getBytes(StandardCharsets.UTF_8);
+        if (!verifySignature(r[0].getBytes(StandardCharsets.UTF_8), n, decoder.decode(r[2]))) {
+            throw new SignatureException("Token is invalid !");
         }
+        return JSON.parseObject(decoder.decode(n));
     }
 
     private boolean verifySignature(byte[] headerBytes, byte[] payloadBytes, byte[] signatureBytes) throws NoSuchAlgorithmException, InvalidKeyException {

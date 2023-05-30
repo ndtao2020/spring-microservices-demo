@@ -113,6 +113,8 @@ sonarqube {
 dependencies {
     jmh "org.openjdk.jmh:jmh-core:${jmhVersion}"
     jmh "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
+    // Apache Commons Code
+    implementation "commons-codec:commons-codec:1.15"
     // lombok
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
