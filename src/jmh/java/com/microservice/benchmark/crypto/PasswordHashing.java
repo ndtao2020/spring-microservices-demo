@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 @BenchmarkMode({Mode.AverageTime, Mode.SingleShotTime})
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-class PasswordHashing {
+public class PasswordHashing {
 
     private static final int PBKDF2_SALT_LENGTH = 16;
     private static final int PBKDF2_ITERATIONS = 310000;
