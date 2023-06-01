@@ -114,6 +114,7 @@ dependencies {
     jmh "org.openjdk.jmh:jmh-core:${jmhVersion}"
     jmh "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
     // Apache Commons Code
+    implementation 'com.google.guava:guava:32.0.0-jre'
     implementation "commons-codec:commons-codec:1.15"
     // lombok
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
@@ -135,10 +136,18 @@ dependencies {
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
     implementation 'io.vertx:vertx-auth-jwt:4.4.2'
+    // libraries of hashing password
+    implementation 'com.amdelamar:jhash:2.2.0'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.73'
+    implementation 'de.mkammerer:argon2-jvm:2.11'
+    implementation 'com.password4j:password4j:1.7.0'
+    implementation 'org.springframework.security:spring-security-crypto:6.1.0'
+    implementation 'io.quarkus:quarkus-elytron-security-common:3.1.0.Final'
     // Log4j
     implementation platform("org.apache.logging.log4j:log4j-bom:${log4jVersion}")
     implementation "org.apache.logging.log4j:log4j-api"
     runtimeOnly "org.apache.logging.log4j:log4j-core"
+    implementation 'commons-logging:commons-logging:1.2'
     // testings
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
     testImplementation 'org.junit.jupiter:junit-jupiter'
