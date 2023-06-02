@@ -6,6 +6,8 @@ import com.dslplatform.json.DslJson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import groovy.json.JsonGenerator;
+import net.minidev.json.JSONValue;
 import org.json.JSONObject;
 import org.openjdk.jmh.annotations.*;
 
@@ -17,8 +19,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
-@BenchmarkMode({Mode.AverageTime, Mode.SingleShotTime})
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.SECONDS)
 public class SerializeJsonFromMap {
 
     public Map<String, String> data = new HashMap<>();
@@ -64,5 +66,16 @@ public class SerializeJsonFromMap {
             json.serialize(data, stream);
             return stream.toString(StandardCharsets.UTF_8);
         }
+    }
+
+    @Benchmark
+    public String jsonSmall() {
+        return JSONValue.toJSONString(data);
+    }
+
+    @Benchmark
+    public String groovyJson() {
+        JsonGenerator jsonGenerator = new JsonGenerator.Options().build();
+        return jsonGenerator.toJson(data);
     }
 }

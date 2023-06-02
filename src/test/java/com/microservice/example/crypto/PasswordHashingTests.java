@@ -1,5 +1,6 @@
 package com.microservice.example.crypto;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.amdelamar.jhash.Hash;
 import com.amdelamar.jhash.algorithms.Type;
 import com.amdelamar.jhash.exception.InvalidHashException;
@@ -91,6 +92,8 @@ class PasswordHashingTests {
         assertNotNull(hash);
     }
 
+    // ======================================================
+
     @Test
     void bcryptWithJhash() throws InvalidHashException {
         Hash jhash = Hash.password(readPasswordFromUserChars).salt(salt).algorithm(Type.BCRYPT);
@@ -104,6 +107,15 @@ class PasswordHashingTests {
         String hash = Password.hash(readPasswordFromUserBytes).withBcrypt().getResult();
         // verify
         assertTrue(Password.check(readPasswordFromUserBytes, hash.getBytes()).withBcrypt());
+    }
+
+    @Test
+    void bcryptWithFavrDev() {
+        // hash
+        String hash = BCrypt.withDefaults().hashToString(10, readPasswordFromUserChars);
+        // verify
+        BCrypt.Result result = BCrypt.verifyer().verify(readPasswordFromUserChars, hash);
+        assertTrue(result.verified);
     }
 
     @Test
@@ -142,6 +154,8 @@ class PasswordHashingTests {
         assertTrue(encoder.matches(readPasswordFromUser, hash));
     }
 
+    // ======================================================
+
     @Test
     void scryptWithJhash() throws InvalidHashException {
         Hash jhash = Hash.password(readPasswordFromUserChars).salt(salt).algorithm(Type.SCRYPT);
@@ -167,6 +181,8 @@ class PasswordHashingTests {
         assertNotNull(hash);
         assertTrue(encoder.matches(readPasswordFromUser, hash));
     }
+
+    // ======================================================
 
     @Test
     void pbkdf2() throws NoSuchAlgorithmException, InvalidKeySpecException, DecoderException {
@@ -224,6 +240,8 @@ class PasswordHashingTests {
         assertNotNull(hash);
         assertTrue(encoder.matches(readPasswordFromUser, hash));
     }
+
+    // ======================================================
 
     @Test
     void argon2() {

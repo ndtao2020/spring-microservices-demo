@@ -41,8 +41,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
-@BenchmarkMode({Mode.AverageTime, Mode.SingleShotTime})
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.SECONDS)
 public class GenerateTokenHS256 {
 
     private static final String JWT_ID = RandomUtils.generateId(20);

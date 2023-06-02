@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.dto.LoginDTO;
+import groovy.json.JsonSlurper;
+import net.minidev.json.JSONValue;
+import org.apache.groovy.json.internal.LazyMap;
 import org.json.JSONObject;
 import org.openjdk.jmh.annotations.*;
 
@@ -15,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MICROSECONDS)
+@OutputTimeUnit(TimeUnit.SECONDS)
 public class DeserializeJsonToDTO {
 
     private final String jsonValue = "{\"email\":\"ndtao2020@yopmail.com\",\"username\":\"ndtao2020\",\"password\":\"" + RandomUtils.generatePassword(50) + "\"}";
@@ -57,5 +60,23 @@ public class DeserializeJsonToDTO {
     @Benchmark
     public LoginDTO alibabaFastjson2() {
         return JSON.parseObject(jsonValue, LoginDTO.class);
+    }
+
+    @Benchmark
+    public LoginDTO jsonSmall() {
+        return JSONValue.parse(jsonValue, LoginDTO.class);
+    }
+
+    @Benchmark
+    public LoginDTO groovyJson() {
+        JsonSlurper jsonSlurper = new JsonSlurper();
+        LazyMap map = (LazyMap) jsonSlurper.parseText(jsonValue);
+
+        LoginDTO dto = new LoginDTO();
+        dto.setEmail(map.get("email").toString());
+        dto.setUsername(map.get("username").toString());
+        dto.setPassword(map.get("password").toString());
+
+        return dto;
     }
 }

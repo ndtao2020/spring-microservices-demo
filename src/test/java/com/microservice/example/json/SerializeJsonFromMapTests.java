@@ -6,6 +6,8 @@ import com.dslplatform.json.DslJson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import groovy.json.JsonGenerator;
+import net.minidev.json.JSONValue;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
 
@@ -18,14 +20,15 @@ import java.util.Map;
 @DisplayName("Map to Json - Test case")
 class SerializeJsonFromMapTests {
 
-    static String originalJsonData = "{\"CS\":\"Post1\",\"Linux\":\"Post1\",\"Kotlin\":\"Post1\"}";
     static Map<String, String> data = new HashMap<>();
+    static String originalJsonData = "";
 
     @BeforeAll
     static void initAll() {
         data.put("CS", "Post1");
         data.put("Linux", "Post1");
         data.put("Kotlin", "Post1");
+        originalJsonData = JSON.toJSONString(data);
     }
 
     @AfterAll
@@ -79,6 +82,19 @@ class SerializeJsonFromMapTests {
             json.serialize(data, stream); //will use thread local writer
             Assertions.assertEquals(originalJsonData, stream.toString(StandardCharsets.UTF_8));
         }
+    }
+
+    @Test
+    @DisplayName("Map to Json: JSON Small")
+    void given_HashMapData_whenJSONSmall_thenConvertToJsonUsing() {
+        Assertions.assertEquals(originalJsonData, JSONValue.toJSONString(data));
+    }
+
+    @Test
+    @DisplayName("Map to Json: Groovy Json")
+    void given_HashMapData_whenGroovyJson_thenConvertToJsonUsing() {
+        JsonGenerator jsonGenerator = new JsonGenerator.Options().build();
+        Assertions.assertEquals(originalJsonData, jsonGenerator.toJson(data));
     }
 
     @AfterEach
