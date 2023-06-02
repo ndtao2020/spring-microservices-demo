@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class Base64UrlDecodeTests {
 
     private static final String BASE64_VALUE = Base64.getUrlEncoder().withoutPadding()
