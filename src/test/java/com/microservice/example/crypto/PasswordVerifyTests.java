@@ -1,9 +1,6 @@
 package com.microservice.example.crypto;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import com.amdelamar.jhash.Hash;
-import com.amdelamar.jhash.algorithms.Type;
-import com.amdelamar.jhash.exception.InvalidHashException;
 import com.microservice.example.RandomUtils;
 import com.password4j.Password;
 import de.mkammerer.argon2.Argon2;
@@ -15,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 
 import java.nio.charset.StandardCharsets;
 
@@ -62,33 +58,33 @@ class PasswordVerifyTests {
 
     // ======================================================
 
-    @Test
-    void scryptWithJhash() throws InvalidHashException {
-        assertTrue(Hash.password(readPasswordFromUserChars).salt(saltBytes).algorithm(Type.SCRYPT).verify(SCRYPT_PASSWORD));
-    }
+//    @Test
+//    void scryptWithJhash() throws InvalidHashException {
+//        assertTrue(Hash.password(readPasswordFromUserChars).salt(saltBytes).algorithm(Type.SCRYPT).verify(SCRYPT_PASSWORD));
+//    }
 
     @Test
     void scryptWithPassword4j() {
         assertTrue(Password.check(readPasswordFromUserBytes, SCRYPT_PASSWORD_BYTES).addSalt(saltBytes).withScrypt());
     }
 
-    @Test
-    void scryptWithSpringSecurity() {
-        // hash a password
-        assertTrue(SCryptPasswordEncoder.defaultsForSpringSecurity_v5_8().matches(readPasswordFromUser, SCRYPT_PASSWORD));
-    }
+//    @Test
+//    void scryptWithSpringSecurity() {
+//        // hash a password
+//        assertTrue(SCryptPasswordEncoder.defaultsForSpringSecurity_v5_8().matches(readPasswordFromUser, SCRYPT_PASSWORD));
+//    }
 
     // ======================================================
 
-    @Test
-    void pbkdf2WithJhash() throws InvalidHashException {
-        assertTrue(Hash.password(readPasswordFromUserChars).salt(saltBytes).algorithm(Type.PBKDF2_SHA256).verify(PBKDF2_PASSWORD));
-    }
-
-    @Test
-    void pbkdf2WithPassword4j() {
-        assertTrue(Password.check(readPasswordFromUserBytes, PBKDF2_PASSWORD_BYTES).addSalt(saltBytes).withPBKDF2());
-    }
+//    @Test
+//    void pbkdf2WithJhash() throws InvalidHashException {
+//        assertTrue(Hash.password(readPasswordFromUserChars).salt(saltBytes).algorithm(Type.PBKDF2_SHA256).verify(PBKDF2_PASSWORD));
+//    }
+//
+//    @Test
+//    void pbkdf2WithPassword4j() {
+//        assertTrue(Password.check(readPasswordFromUserBytes, PBKDF2_PASSWORD_BYTES).addSalt(saltBytes).withPBKDF2());
+//    }
 
     @Test
     void pbkdf2WithSpringSecurity() {

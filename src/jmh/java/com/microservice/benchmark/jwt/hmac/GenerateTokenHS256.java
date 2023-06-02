@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.SECONDS)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class GenerateTokenHS256 {
 
     private static final String JWT_ID = RandomUtils.generateId(20);

@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class PasswordVerify {
 
     static String salt = RandomUtils.generatePassword(Argon2Constants.DEFAULT_SALT_LENGTH);
