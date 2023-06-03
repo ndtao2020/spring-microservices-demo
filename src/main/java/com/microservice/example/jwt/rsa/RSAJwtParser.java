@@ -1,8 +1,8 @@
 package com.microservice.example.jwt.rsa;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.microservice.example.jwt.Algorithm;
+import com.microservice.example.jwt.Payload;
 
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -19,13 +19,17 @@ public class RSAJwtParser {
         this.algorithm = algorithm;
     }
 
-    public JSONObject verify(String t) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+    public Payload verify(String t) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
         String[] r = t.split("\\" + RSAJwtBuilder.DELIMITER);
         byte[] n = r[1].getBytes(StandardCharsets.UTF_8);
         if (!verifySignature(r[0].getBytes(StandardCharsets.UTF_8), n, decoder.decode(r[2]))) {
             throw new SignatureException("Token is invalid !");
         }
-        return JSON.parseObject(decoder.decode(n));
+        Payload payload = JSON.parseObject(decoder.decode(n), Payload.class);
+        if (payload.getExp() < System.currentTimeMillis() / 1000) {
+            throw new SignatureException("Token is expiration !");
+        }
+        return payload;
     }
 
     private boolean verifySignature(byte[] headerBytes, byte[] payloadBytes, byte[] signatureBytes) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {

@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-@DisplayName("Map to Json - Test case")
 class SerializeJsonFromMapTests {
 
     static Map<String, String> data = new HashMap<>();
@@ -41,42 +40,40 @@ class SerializeJsonFromMapTests {
 
     @Test
     @DisplayName("Map to Json: Jackson")
-    void given_HashMapData_whenUsingJackson_thenConvertToJson() throws JsonProcessingException {
+    void jackson() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Assertions.assertEquals(originalJsonData, objectMapper.writeValueAsString(data));
     }
 
     @Test
     @DisplayName("Map to Json: Gson")
-    void given_HashMapData_whenUsingGson_thenConvertToJson() {
+    void gson() {
         Gson gson = new Gson();
         Assertions.assertEquals(originalJsonData, gson.toJson(data));
     }
 
     @Test
     @DisplayName("Map to Json: JSONObject")
-    void given_HashMapData_whenOrgJson_thenConvertToJsonUsing() {
+    void jSONObject() {
         JSONObject jsonObject = new JSONObject(data);
         Assertions.assertEquals(originalJsonData, jsonObject.toString());
     }
 
     @Test
     @DisplayName("Map to Json: Cedar Software json-io")
-    void given_HashMapData_whenJson_io_thenConvertToJsonUsing() {
-        Map<String, Object> args = new HashMap<>();
-        args.put(JsonWriter.TYPE, false);
-        Assertions.assertEquals(originalJsonData, JsonWriter.objectToJson(data, args));
+    void cedarJsonIO() {
+        Assertions.assertEquals(originalJsonData, JsonWriter.objectToJson(data, Map.of(JsonWriter.TYPE, false)));
     }
 
     @Test
     @DisplayName("Map to Json: Alibaba fastjson2")
-    void given_HashMapData_whenAlibaba_thenConvertToJsonUsing() {
+    void alibabaFastjson2() {
         Assertions.assertEquals(originalJsonData, JSON.toJSONString(data));
     }
 
     @Test
     @DisplayName("Map to Json: DslJson")
-    void given_HashMapData_whenDslJson_thenConvertToJsonUsing() throws IOException {
+    void dslJson() throws IOException {
         DslJson<Object> json = new DslJson<>();
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
             json.serialize(data, stream); //will use thread local writer
@@ -86,13 +83,13 @@ class SerializeJsonFromMapTests {
 
     @Test
     @DisplayName("Map to Json: JSON Small")
-    void given_HashMapData_whenJSONSmall_thenConvertToJsonUsing() {
+    void jsonSmall() {
         Assertions.assertEquals(originalJsonData, JSONValue.toJSONString(data));
     }
 
     @Test
     @DisplayName("Map to Json: Groovy Json")
-    void given_HashMapData_whenGroovyJson_thenConvertToJsonUsing() {
+    void groovyJson() {
         JsonGenerator jsonGenerator = new JsonGenerator.Options().build();
         Assertions.assertEquals(originalJsonData, jsonGenerator.toJson(data));
     }

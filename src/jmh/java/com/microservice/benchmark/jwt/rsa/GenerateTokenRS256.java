@@ -4,9 +4,23 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Claims;
+import com.microservice.example.jwt.Payload;
 import com.microservice.example.jwt.rsa.RSAJwtBuilder;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import io.fusionauth.jwt.rsa.RSASigner;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.jboss.resteasy.jose.jws.JWSBuilder;
+import org.jose4j.jws.AlgorithmIdentifiers;
+import org.jose4j.jws.JsonWebSignature;
+import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.NumericDate;
+import org.jose4j.lang.JoseException;
 import org.openjdk.jmh.annotations.*;
 
 import java.security.*;
@@ -59,6 +73,19 @@ public class GenerateTokenRS256 {
     }
 
     @Benchmark
+    public String customJWTwithDTO() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        RSAJwtBuilder jwtBuilder = new RSAJwtBuilder(privateKey, com.microservice.example.jwt.Algorithm.RS256);
+
+        Payload payload = new Payload();
+        payload.setJti(JWT_ID);
+        payload.setIss(ISSUER);
+        payload.setSub(SUBJECT);
+        payload.setExp(expiresAt.getTime() / 1000);
+
+        return jwtBuilder.compact(payload);
+    }
+
+    @Benchmark
     public String auth0JWT() {
         return JWT.create()
                 .withJWTId(JWT_ID)
@@ -66,6 +93,29 @@ public class GenerateTokenRS256 {
                 .withSubject(SUBJECT)
                 .withExpiresAt(expiresAt)
                 .sign(Algorithm.RSA256(publicKey, privateKey));
+    }
+
+    @Benchmark
+    public String jsonWebToken() {
+        return Jwts.builder()
+                .setId(JWT_ID)
+                .setIssuer(ISSUER)
+                .setSubject(SUBJECT)
+                .setExpiration(expiresAt)
+                .signWith(privateKey, SignatureAlgorithm.RS256)
+                .compact();
+    }
+
+    @Benchmark
+    public String nimbusJoseJWT() throws JOSEException {
+        SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), new JWTClaimsSet.Builder()
+                .jwtID(JWT_ID)
+                .issuer(ISSUER)
+                .subject(SUBJECT)
+                .expirationTime(expiresAt)
+                .build());
+        signedJWT.sign(new RSASSASigner(privateKey));
+        return signedJWT.serialize();
     }
 
     @Benchmark
@@ -77,5 +127,32 @@ public class GenerateTokenRS256 {
                 .setExpiration(zoneExpiresAt);
         // Sign and encode the JWT to a JSON string representation
         return io.fusionauth.jwt.domain.JWT.getEncoder().encode(jwt, RSASigner.newSHA256Signer(privateKey));
+    }
+
+    @Benchmark
+    public String bitbucketBC() throws JoseException {
+        // Create the Claims, which will be the content of the JWT
+        JwtClaims claims = new JwtClaims();
+        claims.setJwtId(JWT_ID);
+        claims.setIssuer(ISSUER);  // who creates the token and signs it
+        claims.setSubject(SUBJECT); // the subject/principal is whom the token is about
+        claims.setExpirationTime(numericDate);
+        // A JWT is a JWS and/or a JWE with JSON claims as the payload.
+        JsonWebSignature jwe = new JsonWebSignature();
+        jwe.setPayload(claims.toJson());
+        jwe.setAlgorithmHeaderValue(AlgorithmIdentifiers.RSA_USING_SHA256);
+        jwe.setKey(privateKey);
+
+        return jwe.getCompactSerialization();
+    }
+
+    @Benchmark
+    public String jbossJoseJwt() {
+        Map<String, Object> map = new HashMap<>();
+        map.put(Claims.JWT_ID, JWT_ID);
+        map.put(Claims.ISSUER, ISSUER);
+        map.put(Claims.SUBJECT, SUBJECT);
+        map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
+        return new JWSBuilder().jsonContent(map).rsa256(privateKey);
     }
 }

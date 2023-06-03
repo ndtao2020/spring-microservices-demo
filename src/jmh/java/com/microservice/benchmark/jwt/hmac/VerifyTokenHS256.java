@@ -1,10 +1,10 @@
 package com.microservice.benchmark.jwt.hmac;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.microservice.example.RandomUtils;
+import com.microservice.example.jwt.Payload;
 import com.microservice.example.jwt.hmac.HMACJwtParser;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
@@ -20,6 +20,10 @@ import io.vertx.ext.auth.PubSecKeyOptions;
 import io.vertx.ext.auth.authentication.TokenCredentials;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTAuthOptions;
+import org.jboss.resteasy.jose.jws.JWSInput;
+import org.jboss.resteasy.jose.jws.JWSInputException;
+import org.jboss.resteasy.jose.jws.crypto.HMACProvider;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
@@ -60,7 +64,7 @@ public class VerifyTokenHS256 {
     }
 
     @Benchmark
-    public JSONObject customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public Payload customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         HMACJwtParser jwtParser = new HMACJwtParser(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
         return jwtParser.verify(generatedToken);
     }
@@ -121,5 +125,14 @@ public class VerifyTokenHS256 {
         provider.authenticate(new TokenCredentials(generatedToken), result -> {
             assert result.succeeded();
         });
+    }
+
+    @Benchmark
+    public Payload jbossJoseJwt() throws JWSInputException, SignatureException {
+        JWSInput input = new JWSInput(generatedToken, ResteasyProviderFactory.getInstance());
+        if (!HMACProvider.verify(input, secretBytes)) {
+            throw new SignatureException("Token is invalid !");
+        }
+        return input.readJsonContent(Payload.class);
     }
 }

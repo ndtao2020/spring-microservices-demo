@@ -3,6 +3,7 @@ package com.microservice.example.jwt.hmac;
 import com.alibaba.fastjson2.JSON;
 import com.microservice.example.jwt.Algorithm;
 import com.microservice.example.jwt.Headers;
+import com.microservice.example.jwt.Payload;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -33,6 +34,15 @@ public class HMACJwtBuilder {
         Map<String, String> map = Map.of(Headers.TYPE, "JWT", Headers.ALGORITHM, algorithm.getValue());
         this.headerBytes = encoder.encode(JSON.toJSONBytes(map));
         this.headerStr = new String(headerBytes, UTF_8) + DELIMITER;
+    }
+
+    public String compact(Payload payload) throws NoSuchAlgorithmException, InvalidKeyException {
+        final Mac m = Mac.getInstance(algorithm.getJcaName());
+        m.init(secretKey);
+        m.update(headerBytes);
+        m.update((byte) 46);
+        byte[] bytes = encoder.encode(JSON.toJSONBytes(payload));
+        return headerStr + new String(bytes, UTF_8) + DELIMITER + new String(encoder.encode(m.doFinal(bytes)), UTF_8);
     }
 
     public String compact(Map<String, ?> payloadMap) throws NoSuchAlgorithmException, InvalidKeyException {

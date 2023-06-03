@@ -1,8 +1,8 @@
 package com.microservice.example.jwt.hmac;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.microservice.example.jwt.Algorithm;
+import com.microservice.example.jwt.Payload;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -30,13 +30,17 @@ public class HMACJwtParser {
         this.algorithm = algorithm;
     }
 
-    public JSONObject verify(String token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public Payload verify(String token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         String[] r = token.split("\\" + HMACJwtBuilder.DELIMITER);
         byte[] n = r[1].getBytes(UTF_8);
         if (!verifySignature(r[0].getBytes(UTF_8), n, decoder.decode(r[2]))) {
             throw new SignatureException("Token is invalid !");
         }
-        return JSON.parseObject(decoder.decode(n));
+        Payload payload = JSON.parseObject(decoder.decode(n), Payload.class);
+        if (payload.getExp() < System.currentTimeMillis() / 1000) {
+            throw new SignatureException("Token is expiration !");
+        }
+        return payload;
     }
 
     private boolean verifySignature(byte[] headerBytes, byte[] payloadBytes, byte[] signatureBytes) throws NoSuchAlgorithmException, InvalidKeyException {

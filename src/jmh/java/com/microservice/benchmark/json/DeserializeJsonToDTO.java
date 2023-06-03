@@ -6,7 +6,8 @@ import com.cedarsoftware.util.io.JsonReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.microservice.example.RandomUtils;
-import com.microservice.example.dto.LoginDTO;
+import com.microservice.example.jwt.Claims;
+import com.microservice.example.jwt.Payload;
 import groovy.json.JsonSlurper;
 import net.minidev.json.JSONValue;
 import org.apache.groovy.json.internal.LazyMap;
@@ -14,6 +15,7 @@ import org.json.JSONObject;
 import org.openjdk.jmh.annotations.*;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
@@ -21,61 +23,82 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class DeserializeJsonToDTO {
 
-    private final String jsonValue = "{\"email\":\"ndtao2020@yopmail.com\",\"username\":\"ndtao2020\",\"password\":\"" + RandomUtils.generatePassword(50) + "\"}";
+    private String jsonValue = null;
+
+    @Setup
+    public void setup() {
+        // init data
+        Payload payload = new Payload();
+        payload.setAud(RandomUtils.generateId(10));
+        payload.setSub("ndtao2020");
+        payload.setIss("https://taoqn.pages.dev");
+        payload.setJti(RandomUtils.generateId(20));
+        payload.setExp(new Date(System.currentTimeMillis() + (60 * 60 * 1000)).getTime());
+        // Serialize Json
+        jsonValue = JSON.toJSONString(payload);
+    }
 
     @Benchmark
-    public LoginDTO jackson() throws IOException {
+    public Payload jackson() throws IOException {
         final ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(jsonValue, LoginDTO.class);
+        return objectMapper.readValue(jsonValue, Payload.class);
     }
 
     @Benchmark
-    public LoginDTO gson() {
+    public Payload gson() {
         final Gson gson = new Gson();
-        return gson.fromJson(jsonValue, LoginDTO.class);
+        return gson.fromJson(jsonValue, Payload.class);
     }
 
     @Benchmark
-    public LoginDTO jSONObject() {
+    public Payload jSONObject() {
         final JSONObject jsonObject = new JSONObject(jsonValue);
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setEmail(jsonObject.getString("email"));
-        loginDTO.setUsername(jsonObject.getString("username"));
-        loginDTO.setPassword(jsonObject.getString("password"));
-        return loginDTO;
+        Payload dto = new Payload();
+        dto.setAud(jsonObject.getString(Claims.AUDIENCE));
+        dto.setSub(jsonObject.getString(Claims.SUBJECT));
+        dto.setIss(jsonObject.getString(Claims.ISSUER));
+        dto.setJti(jsonObject.getString(Claims.JWT_ID));
+        dto.setExp(jsonObject.getLong(Claims.EXPIRES_AT));
+        return dto;
     }
 
     @Benchmark
-    public LoginDTO cedarJsonIO() {
-        JsonObject<String, Object> jsonObject = (JsonObject) JsonReader.jsonToJava(jsonValue);
+    public Payload cedarJsonIO() {
+        final JsonObject<String, Object> jsonObject = (JsonObject) JsonReader.jsonToJava(jsonValue);
 
-        LoginDTO dto = new LoginDTO();
-        dto.setEmail(jsonObject.get("email").toString());
-        dto.setUsername(jsonObject.get("username").toString());
-        dto.setPassword(jsonObject.get("password").toString());
+        Payload dto = new Payload();
+
+        dto.setAud(jsonObject.get(Claims.AUDIENCE).toString());
+        dto.setSub(jsonObject.get(Claims.SUBJECT).toString());
+        dto.setIss(jsonObject.get(Claims.ISSUER).toString());
+        dto.setJti(jsonObject.get(Claims.JWT_ID).toString());
+        dto.setExp(Long.parseLong(jsonObject.get(Claims.EXPIRES_AT).toString()));
 
         return dto;
     }
 
     @Benchmark
-    public LoginDTO alibabaFastjson2() {
-        return JSON.parseObject(jsonValue, LoginDTO.class);
+    public Payload alibabaFastjson2() {
+        return JSON.parseObject(jsonValue, Payload.class);
     }
 
     @Benchmark
-    public LoginDTO jsonSmall() {
-        return JSONValue.parse(jsonValue, LoginDTO.class);
+    public Payload jsonSmall() {
+        return JSONValue.parse(jsonValue, Payload.class);
     }
 
     @Benchmark
-    public LoginDTO groovyJson() {
-        JsonSlurper jsonSlurper = new JsonSlurper();
-        LazyMap map = (LazyMap) jsonSlurper.parseText(jsonValue);
+    public Payload groovyJson() {
+        final JsonSlurper jsonSlurper = new JsonSlurper();
+        final LazyMap jsonObject = (LazyMap) jsonSlurper.parseText(jsonValue);
 
-        LoginDTO dto = new LoginDTO();
-        dto.setEmail(map.get("email").toString());
-        dto.setUsername(map.get("username").toString());
-        dto.setPassword(map.get("password").toString());
+        Payload dto = new Payload();
+
+        dto.setAud(jsonObject.get(Claims.AUDIENCE).toString());
+        dto.setSub(jsonObject.get(Claims.SUBJECT).toString());
+        dto.setIss(jsonObject.get(Claims.ISSUER).toString());
+        dto.setJti(jsonObject.get(Claims.JWT_ID).toString());
+        dto.setExp(Long.parseLong(jsonObject.get(Claims.EXPIRES_AT).toString()));
 
         return dto;
     }

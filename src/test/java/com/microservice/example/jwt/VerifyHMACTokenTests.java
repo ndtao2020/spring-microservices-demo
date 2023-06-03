@@ -1,6 +1,5 @@
 package com.microservice.example.jwt;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -22,6 +21,10 @@ import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.authentication.TokenCredentials;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTAuthOptions;
+import org.jboss.resteasy.jose.jws.JWSInput;
+import org.jboss.resteasy.jose.jws.JWSInputException;
+import org.jboss.resteasy.jose.jws.crypto.HMACProvider;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.consumer.InvalidJwtException;
@@ -59,12 +62,12 @@ class VerifyHMACTokenTests {
     @Test
     void customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         HMACJwtParser jwtParser = new HMACJwtParser(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
-        JSONObject jsonObject = jwtParser.verify(generatedToken);
+        Payload payload = jwtParser.verify(generatedToken);
         // Assert the subject of the JWT is as expected
-        assertNotNull(jsonObject);
-        assertEquals(JWT_ID, jsonObject.getString(Claims.JWT_ID));
-        assertEquals(ISSUER, jsonObject.getString(Claims.ISSUER));
-        assertEquals(SUBJECT, jsonObject.getString(Claims.SUBJECT));
+        assertNotNull(payload);
+        assertEquals(JWT_ID, payload.getJti());
+        assertEquals(ISSUER, payload.getIss());
+        assertEquals(SUBJECT, payload.getSub());
     }
 
     @Test
@@ -146,5 +149,13 @@ class VerifyHMACTokenTests {
             assertEquals(ISSUER, jsonObject.getString(Claims.ISSUER));
             assertEquals(SUBJECT, jsonObject.getString(Claims.SUBJECT));
         });
+    }
+
+    @Test
+    void jbossJoseJwt() throws JWSInputException {
+        JWSInput input = new JWSInput(generatedToken, ResteasyProviderFactory.getInstance());
+        assertTrue(HMACProvider.verify(input, secretBytes));
+        Payload dto = input.readJsonContent(Payload.class);
+        assertNotNull(dto);
     }
 }

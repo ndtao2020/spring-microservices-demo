@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Claims;
+import com.microservice.example.jwt.Payload;
 import com.microservice.example.jwt.hmac.HMACJwtBuilder;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -22,6 +23,7 @@ import io.vertx.ext.auth.JWTOptions;
 import io.vertx.ext.auth.PubSecKeyOptions;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTAuthOptions;
+import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
@@ -66,6 +68,19 @@ public class GenerateTokenHS256 {
         map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
 
         return jwtBuilder.compact(map);
+    }
+
+    @Benchmark
+    public String customJWTwithDTO() throws NoSuchAlgorithmException, InvalidKeyException {
+        HMACJwtBuilder jwtBuilder = new HMACJwtBuilder(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
+
+        Payload payload = new Payload();
+        payload.setJti(JWT_ID);
+        payload.setIss(ISSUER);
+        payload.setSub(SUBJECT);
+        payload.setExp(expiresAt.getTime() / 1000);
+
+        return jwtBuilder.compact(payload);
     }
 
     @Benchmark
@@ -147,5 +162,15 @@ public class GenerateTokenHS256 {
         jsonObject.put(Claims.JWT_ID, JWT_ID);
 
         return provider.generateToken(jsonObject);
+    }
+
+    @Benchmark
+    public String jbossJoseJwt() {
+        Map<String, Object> map = new HashMap<>();
+        map.put(Claims.JWT_ID, JWT_ID);
+        map.put(Claims.ISSUER, ISSUER);
+        map.put(Claims.SUBJECT, SUBJECT);
+        map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
+        return new JWSBuilder().jsonContent(map).hmac256(secretBytes);
     }
 }

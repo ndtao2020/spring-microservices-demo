@@ -3,6 +3,7 @@ package com.microservice.example.jwt.rsa;
 import com.alibaba.fastjson2.JSON;
 import com.microservice.example.jwt.Algorithm;
 import com.microservice.example.jwt.Headers;
+import com.microservice.example.jwt.Payload;
 
 import java.security.*;
 import java.util.Base64;
@@ -27,13 +28,23 @@ public class RSAJwtBuilder {
         this.headerStr = new String(headerBytes, UTF_8) + DELIMITER;
     }
 
-    public String compact(Map<String, ?> payloadMap) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
-        byte[] payloadBytes = encoder.encode(JSON.toJSONBytes(payloadMap));
+    public String compact(Payload payload) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+        byte[] bytes = encoder.encode(JSON.toJSONBytes(payload));
         final Signature s = Signature.getInstance(algorithm.getJcaName());
         s.initSign(privateKey);
         s.update(headerBytes);
         s.update((byte) 46);
-        s.update(payloadBytes);
-        return headerStr + new String(payloadBytes, UTF_8) + DELIMITER + new String(encoder.encode(s.sign()), UTF_8);
+        s.update(bytes);
+        return headerStr + new String(bytes, UTF_8) + DELIMITER + new String(encoder.encode(s.sign()), UTF_8);
+    }
+
+    public String compact(Map<String, ?> payloadMap) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+        byte[] bytes = encoder.encode(JSON.toJSONBytes(payloadMap));
+        final Signature s = Signature.getInstance(algorithm.getJcaName());
+        s.initSign(privateKey);
+        s.update(headerBytes);
+        s.update((byte) 46);
+        s.update(bytes);
+        return headerStr + new String(bytes, UTF_8) + DELIMITER + new String(encoder.encode(s.sign()), UTF_8);
     }
 }
