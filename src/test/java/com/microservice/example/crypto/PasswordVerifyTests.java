@@ -47,6 +47,11 @@ class PasswordVerifyTests {
     }
 
     @Test
+    void mindrotJBCrypt10() {
+        assertTrue(org.mindrot.jbcrypt.BCrypt.checkpw(readPasswordFromUser, BCRYPT_PASSWORD_10));
+    }
+
+    @Test
     void bcryptWithQuarkusSecurity10() {
         assertTrue(BcryptUtil.matches(readPasswordFromUser, BCRYPT_PASSWORD_10));
     }

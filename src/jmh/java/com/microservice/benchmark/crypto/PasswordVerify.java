@@ -51,6 +51,11 @@ public class PasswordVerify {
     }
 
     @Benchmark
+    public boolean mindrotJBCrypt10() {
+        return org.mindrot.jbcrypt.BCrypt.checkpw(readPasswordFromUser, BCRYPT_PASSWORD_10);
+    }
+
+    @Benchmark
     public boolean bcryptWithQuarkusSecurity10() {
         return BcryptUtil.matches(readPasswordFromUser, BCRYPT_PASSWORD_10);
     }

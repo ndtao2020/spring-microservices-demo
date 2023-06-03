@@ -38,6 +38,8 @@ public class PasswordHashing {
     static char[] readPasswordFromUserChars = readPasswordFromUser.toCharArray();
     static byte[] readPasswordFromUserBytes = readPasswordFromUser.getBytes(StandardCharsets.UTF_8);
 
+    // ======================================================
+
     @Benchmark
     public String bcryptWithJhash() {
         return Hash.password(readPasswordFromUserChars).salt(salt).algorithm(Type.BCRYPT).create();
@@ -55,9 +57,8 @@ public class PasswordHashing {
     }
 
     @Benchmark
-    public String bcryptWithFavrDev12() {
-        // hash
-        return BCrypt.withDefaults().hashToString(12, readPasswordFromUserChars);
+    public String mindrotJBCrypt10() {
+        return org.mindrot.jbcrypt.BCrypt.hashpw(readPasswordFromUser, org.mindrot.jbcrypt.BCrypt.gensalt(10));
     }
 
     @Benchmark
@@ -66,22 +67,11 @@ public class PasswordHashing {
     }
 
     @Benchmark
-    public String bcryptWithQuarkusSecurity12() {
-        // hash a password
-        return BcryptUtil.bcryptHash(readPasswordFromUser, 12);
-    }
-
-    @Benchmark
     public String bcryptWithSpringSecurity10() {
-        // hash a password
         return new BCryptPasswordEncoder(10).encode(readPasswordFromUser);
     }
 
-    @Benchmark
-    public String bcryptWithSpringSecurity12() {
-        // hash a password
-        return new BCryptPasswordEncoder(12).encode(readPasswordFromUser);
-    }
+    // ======================================================
 
     @Benchmark
     public String scryptWithJhash() {
@@ -98,6 +88,8 @@ public class PasswordHashing {
         // hash a password
         return SCryptPasswordEncoder.defaultsForSpringSecurity_v5_8().encode(readPasswordFromUser);
     }
+
+    // ======================================================
 
     @Benchmark
     public String pbkdf2() throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -136,20 +128,20 @@ public class PasswordHashing {
         return encoder.encode(readPasswordFromUser);
     }
 
+    // ======================================================
+
     @Benchmark
     public String argon2() {
-        // Create instance
-        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, Argon2Constants.DEFAULT_SALT_LENGTH, Argon2Constants.DEFAULT_HASH_LENGTH);
-        return argon2.hash(2, 16, 1, readPasswordFromUserBytes);
+        return Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, Argon2Constants.DEFAULT_SALT_LENGTH, Argon2Constants.DEFAULT_HASH_LENGTH)
+                .hash(2, 16, 1, readPasswordFromUserBytes);
     }
 
     @Benchmark
     public String argon2WithHelper() {
         // Create instance
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, Argon2Constants.DEFAULT_SALT_LENGTH, Argon2Constants.DEFAULT_HASH_LENGTH);
-        int iterations = Argon2Helper.findIterations(argon2, 1000, 65536, 1);
         // hash a password
-        return argon2.hash(iterations, 65536, 1, readPasswordFromUserBytes);
+        return argon2.hash(Argon2Helper.findIterations(argon2, 1000, 65536, 1), 65536, 1, readPasswordFromUserBytes);
     }
 
     @Benchmark

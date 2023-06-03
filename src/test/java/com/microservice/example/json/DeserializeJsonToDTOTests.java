@@ -92,9 +92,7 @@ class DeserializeJsonToDTOTests {
     @Test
     @DisplayName("Deserialize Json To DTO: JSON Small")
     void jsonSmall() {
-        LoginDTO dto = JSONValue.parse(jsonValue, LoginDTO.class);
-        assertNotNull(dto);
-        assertEquals(loginDTO, dto);
+        assertEquals(loginDTO, JSONValue.parse(jsonValue, LoginDTO.class));
     }
 
     @Test

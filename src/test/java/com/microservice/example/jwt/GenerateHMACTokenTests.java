@@ -42,7 +42,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DisplayName("Generate a Token with HMAC - Test case")
-class GenerateHMACTokenUnitTest {
+class GenerateHMACTokenTests {
 
     private static final String JWT_ID = RandomUtils.generateId(20);
     private static final String ISSUER = "https://taoqn.pages.dev";

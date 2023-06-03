@@ -41,7 +41,7 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Generate a Token with HMAC - Test case")
-class VerifyHMACTokenUnitTest {
+class VerifyHMACTokenTests {
 
     private static final String JWT_ID = RandomUtils.generateId(20);
     private static final String ISSUER = "https://taoqn.pages.dev";

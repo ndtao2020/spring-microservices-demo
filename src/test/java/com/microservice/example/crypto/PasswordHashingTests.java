@@ -119,6 +119,12 @@ class PasswordHashingTests {
     }
 
     @Test
+    void mindrotJBCrypt() {
+        String hashed = org.mindrot.jbcrypt.BCrypt.hashpw(readPasswordFromUser, org.mindrot.jbcrypt.BCrypt.gensalt());
+        assertTrue(org.mindrot.jbcrypt.BCrypt.checkpw(readPasswordFromUser, hashed));
+    }
+
+    @Test
     void bcryptWithQuarkusSecurity() {
         // hash a password
         String hash = BcryptUtil.bcryptHash(readPasswordFromUser);
