@@ -1,9 +1,9 @@
 package com.microservice.benchmark.crypto;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import com.amdelamar.jhash.Hash;
-import com.amdelamar.jhash.algorithms.Type;
-import com.amdelamar.jhash.exception.InvalidHashException;
+import com.kosprov.jargon2.api.Jargon2;
+import com.kosprov.jargon2.internal.VerifierImpl;
+import com.kosprov.jargon2.nativeri.backend.NativeRiJargon2Backend;
 import com.microservice.example.RandomUtils;
 import com.password4j.Password;
 import de.mkammerer.argon2.Argon2;
@@ -27,16 +27,31 @@ public class PasswordVerify {
     static String salt = RandomUtils.generatePassword(Argon2Constants.DEFAULT_SALT_LENGTH);
     static byte[] saltBytes = salt.getBytes(StandardCharsets.UTF_8);
     static String readPasswordFromUser = RandomUtils.generatePassword(20);
+    static char[] readPasswordFromUserChars = readPasswordFromUser.toCharArray();
+    static byte[] readPasswordFromUserBytes = readPasswordFromUser.getBytes(StandardCharsets.UTF_8);
+
+    // ======================================================
+
     private static final String BCRYPT_PASSWORD_10 = new BCryptPasswordEncoder().encode(readPasswordFromUser);
     private static final byte[] BCRYPT_PASSWORD_BYTES_10 = BCRYPT_PASSWORD_10.getBytes(StandardCharsets.UTF_8);
-    private static final String PBKDF2_PASSWORD = Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8().encode(readPasswordFromUser);
-    private static final byte[] PBKDF2_PASSWORD_BYTES = PBKDF2_PASSWORD.getBytes(StandardCharsets.UTF_8);
-    static char[] readPasswordFromUserChars = readPasswordFromUser.toCharArray();
-    private static final String ARGON2_PASSWORD = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, Argon2Constants.DEFAULT_SALT_LENGTH, Argon2Constants.DEFAULT_HASH_LENGTH)
-            .hash(2, 16, 1, readPasswordFromUserChars);
-    static byte[] readPasswordFromUserBytes = readPasswordFromUser.getBytes(StandardCharsets.UTF_8);
-    private static final String SCRYPT_PASSWORD = Password.hash(readPasswordFromUserBytes).addSalt(saltBytes).withScrypt().getResult();
+
+    // ======================================================
+
+    private static final String SCRYPT_PASSWORD = new SCryptPasswordEncoder(65536, 8, 2, Argon2Constants.DEFAULT_HASH_LENGTH, Argon2Constants.DEFAULT_SALT_LENGTH)
+            .encode(readPasswordFromUser);
     private static final byte[] SCRYPT_PASSWORD_BYTES = SCRYPT_PASSWORD.getBytes(StandardCharsets.UTF_8);
+
+    // ======================================================
+
+    private static final String PBKDF2_PASSWORD = new Pbkdf2PasswordEncoder(salt, Argon2Constants.DEFAULT_SALT_LENGTH, 310000, Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256)
+            .encode(readPasswordFromUser);
+
+    // ======================================================
+
+    private static final String ARGON2_PASSWORD = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, Argon2Constants.DEFAULT_SALT_LENGTH, Argon2Constants.DEFAULT_HASH_LENGTH)
+            .hash(5, 65536, 2, readPasswordFromUserChars);
+
+    // ======================================================
 
     // ======================================================
 
@@ -68,40 +83,19 @@ public class PasswordVerify {
     // ======================================================
 
     @Benchmark
-    public boolean scryptWithJhash() throws InvalidHashException {
-        return Hash.password(readPasswordFromUserChars).salt(saltBytes)
-                .algorithm(Type.SCRYPT).verify(SCRYPT_PASSWORD);
-    }
-
-    @Benchmark
-    public boolean scryptWithPassword4j() {
-        return Password.check(readPasswordFromUserBytes, SCRYPT_PASSWORD_BYTES)
-                .addSalt(salt).withScrypt();
-    }
-
-    @Benchmark
     public boolean scryptWithSpringSecurity() {
+        SCryptPasswordEncoder passwordEncoder = new SCryptPasswordEncoder(65536, 8, 2, Argon2Constants.DEFAULT_HASH_LENGTH, Argon2Constants.DEFAULT_SALT_LENGTH);
         // hash a password
-        return SCryptPasswordEncoder.defaultsForSpringSecurity_v5_8()
-                .matches(readPasswordFromUser, SCRYPT_PASSWORD);
+        return passwordEncoder.matches(readPasswordFromUser, SCRYPT_PASSWORD);
     }
 
     // ======================================================
 
     @Benchmark
-    public boolean pbkdf2WithJhash() throws InvalidHashException {
-        return Hash.password(readPasswordFromUserChars).salt(saltBytes).algorithm(Type.PBKDF2_SHA256).verify(PBKDF2_PASSWORD);
-    }
-
-    @Benchmark
-    public boolean pbkdf2WithPassword4j() {
-        return Password.check(readPasswordFromUserBytes, PBKDF2_PASSWORD_BYTES).addSalt(saltBytes).withPBKDF2();
-    }
-
-    @Benchmark
     public boolean pbkdf2WithSpringSecurity() {
+        Pbkdf2PasswordEncoder passwordEncoder = new Pbkdf2PasswordEncoder(salt, Argon2Constants.DEFAULT_SALT_LENGTH, 310000, Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256);
         // hash a password
-        return Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8().matches(readPasswordFromUser, PBKDF2_PASSWORD);
+        return passwordEncoder.matches(readPasswordFromUser, PBKDF2_PASSWORD);
     }
 
     // ======================================================
@@ -110,6 +104,20 @@ public class PasswordVerify {
     public boolean argon2() {
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, Argon2Constants.DEFAULT_SALT_LENGTH, Argon2Constants.DEFAULT_HASH_LENGTH);
         return argon2.verify(ARGON2_PASSWORD, readPasswordFromUserBytes);
+    }
+
+    @Benchmark
+    public boolean argon2WithJargon2() {
+        Jargon2.Verifier verifier = new VerifierImpl().type(Jargon2.Type.ARGON2id).memoryCost(65536).parallelism(2);
+        // asserts
+        return verifier.hash(ARGON2_PASSWORD).password(readPasswordFromUserBytes).verifyEncoded();
+    }
+
+    @Benchmark
+    public boolean argon2WithJargon2Native() {
+        Jargon2.Verifier verifier = new VerifierImpl().backend(new NativeRiJargon2Backend()).type(Jargon2.Type.ARGON2id).memoryCost(65536).parallelism(2);
+        // asserts
+        return verifier.hash(ARGON2_PASSWORD).password(readPasswordFromUserBytes).verifyEncoded();
     }
 
     @Benchmark

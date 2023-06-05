@@ -5,9 +5,14 @@ import com.amdelamar.jhash.Hash;
 import com.amdelamar.jhash.algorithms.Type;
 import com.amdelamar.jhash.exception.InvalidHashException;
 import com.google.common.hash.Hashing;
+import com.kosprov.jargon2.api.Jargon2;
+import com.kosprov.jargon2.internal.HasherImpl;
+import com.kosprov.jargon2.internal.VerifierImpl;
+import com.kosprov.jargon2.nativeri.backend.NativeRiJargon2Backend;
 import com.microservice.example.RandomUtils;
 import com.password4j.Password;
 import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Constants;
 import de.mkammerer.argon2.Argon2Factory;
 import de.mkammerer.argon2.Argon2Helper;
 import io.quarkus.elytron.security.common.BcryptUtil;
@@ -283,6 +288,48 @@ class PasswordHashingTests {
             // Wipe confidential data
             argon2.wipeArray(readPasswordFromUserBytes);
         }
+    }
+
+    @Test
+    void argon2WithJargon2() {
+        Jargon2.Hasher hasher = new HasherImpl()
+                .type(Jargon2.Type.ARGON2id) // Data-dependent hashing
+                .memoryCost(65536)  // 64MB memory cost
+                .timeCost(3)        // 3 passes through memory
+                .parallelism(4)     // use 4 lanes and 4 threads
+                .saltLength(Argon2Constants.DEFAULT_SALT_LENGTH)
+                .hashLength(Argon2Constants.DEFAULT_HASH_LENGTH);
+        String encodedHash = hasher.password(readPasswordFromUserBytes).encodedHash();
+        Jargon2.Verifier verifier = new VerifierImpl()
+                .type(Jargon2.Type.ARGON2id) // Data-dependent hashing
+                .memoryCost(65536)  // 64MB memory cost
+                .timeCost(3)        // 3 passes through memory
+                .parallelism(4);
+        // asserts
+        assertNotNull(encodedHash);
+        assertTrue(verifier.hash(encodedHash).password(readPasswordFromUserBytes).verifyEncoded());
+    }
+
+    @Test
+    void argon2WithJargon2Native() {
+        Jargon2.Hasher hasher = new HasherImpl()
+                .backend(new NativeRiJargon2Backend())
+                .type(Jargon2.Type.ARGON2id) // Data-dependent hashing
+                .memoryCost(65536)  // 64MB memory cost
+                .timeCost(3)        // 3 passes through memory
+                .parallelism(4)     // use 4 lanes and 4 threads
+                .saltLength(Argon2Constants.DEFAULT_SALT_LENGTH)
+                .hashLength(Argon2Constants.DEFAULT_HASH_LENGTH);
+        String encodedHash = hasher.password(readPasswordFromUserBytes).encodedHash();
+        Jargon2.Verifier verifier = new VerifierImpl()
+                .backend(new NativeRiJargon2Backend())
+                .type(Jargon2.Type.ARGON2id) // Data-dependent hashing
+                .memoryCost(65536)  // 64MB memory cost
+                .timeCost(3)        // 3 passes through memory
+                .parallelism(4);
+        // asserts
+        assertNotNull(encodedHash);
+        assertTrue(verifier.hash(encodedHash).password(readPasswordFromUserBytes).verifyEncoded());
     }
 
     @Test

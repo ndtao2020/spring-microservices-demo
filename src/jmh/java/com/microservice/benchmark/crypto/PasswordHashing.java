@@ -3,6 +3,9 @@ package com.microservice.benchmark.crypto;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.amdelamar.jhash.Hash;
 import com.amdelamar.jhash.algorithms.Type;
+import com.kosprov.jargon2.api.Jargon2;
+import com.kosprov.jargon2.internal.HasherImpl;
+import com.kosprov.jargon2.nativeri.backend.NativeRiJargon2Backend;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.crypto.PBKDF2Password;
 import com.microservice.example.crypto.Sha512Hashing;
@@ -137,11 +140,63 @@ public class PasswordHashing {
     }
 
     @Benchmark
+    public String argon2Parallelisms2() {
+        return Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, Argon2Constants.DEFAULT_SALT_LENGTH, Argon2Constants.DEFAULT_HASH_LENGTH)
+                .hash(2, 16, 2, readPasswordFromUserBytes);
+    }
+
+    @Benchmark
     public String argon2WithHelper() {
         // Create instance
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, Argon2Constants.DEFAULT_SALT_LENGTH, Argon2Constants.DEFAULT_HASH_LENGTH);
         // hash a password
         return argon2.hash(Argon2Helper.findIterations(argon2, 1000, 65536, 1), 65536, 1, readPasswordFromUserBytes);
+    }
+
+    @Benchmark
+    public String argon2WithJargon2() {
+        Jargon2.Hasher hasher = new HasherImpl()
+                .type(Jargon2.Type.ARGON2id)
+                .memoryCost(65536)
+                .parallelism(1)
+                .saltLength(Argon2Constants.DEFAULT_SALT_LENGTH)
+                .hashLength(Argon2Constants.DEFAULT_HASH_LENGTH);
+        return hasher.password(readPasswordFromUserBytes).encodedHash();
+    }
+
+    @Benchmark
+    public String argon2WithJargon2Parallelisms2() {
+        Jargon2.Hasher hasher = new HasherImpl()
+                .type(Jargon2.Type.ARGON2id)
+                .memoryCost(65536)
+                .parallelism(2)
+                .saltLength(Argon2Constants.DEFAULT_SALT_LENGTH)
+                .hashLength(Argon2Constants.DEFAULT_HASH_LENGTH);
+        return hasher.password(readPasswordFromUserBytes).encodedHash();
+    }
+
+    @Benchmark
+    public String argon2WithJargon2Native() {
+        Jargon2.Hasher hasher = new HasherImpl()
+                .backend(new NativeRiJargon2Backend())
+                .type(Jargon2.Type.ARGON2id)
+                .memoryCost(65536)
+                .parallelism(1)
+                .saltLength(Argon2Constants.DEFAULT_SALT_LENGTH)
+                .hashLength(Argon2Constants.DEFAULT_HASH_LENGTH);
+        return hasher.password(readPasswordFromUserBytes).encodedHash();
+    }
+
+    @Benchmark
+    public String argon2WithJargon2NativeParallelisms2() {
+        Jargon2.Hasher hasher = new HasherImpl()
+                .backend(new NativeRiJargon2Backend())
+                .type(Jargon2.Type.ARGON2id)
+                .memoryCost(65536)
+                .parallelism(2)
+                .saltLength(Argon2Constants.DEFAULT_SALT_LENGTH)
+                .hashLength(Argon2Constants.DEFAULT_HASH_LENGTH);
+        return hasher.password(readPasswordFromUserBytes).encodedHash();
     }
 
     @Benchmark
@@ -152,6 +207,12 @@ public class PasswordHashing {
     @Benchmark
     public String argon2WithSpringSecurity() {
         Argon2PasswordEncoder passwordEncoder = new Argon2PasswordEncoder(Argon2Constants.DEFAULT_SALT_LENGTH, Argon2Constants.DEFAULT_HASH_LENGTH, 1, 16, 2);
+        return passwordEncoder.encode(readPasswordFromUser);
+    }
+
+    @Benchmark
+    public String argon2WithSpringSecurityParallelisms2() {
+        Argon2PasswordEncoder passwordEncoder = new Argon2PasswordEncoder(Argon2Constants.DEFAULT_SALT_LENGTH, Argon2Constants.DEFAULT_HASH_LENGTH, 2, 16, 2);
         return passwordEncoder.encode(readPasswordFromUser);
     }
 }
