@@ -11,7 +11,7 @@ plugins {
     id "java"
     id "application"
     id "me.champeau.jmh" version "0.7.1"
-    id 'org.sonarqube' version '4.1.0.3113' apply true
+    id 'org.sonarqube' version '4.2.0.3129' apply true
     id 'org.springframework.boot' version '3.1.0' apply false
     id 'io.spring.dependency-management' version '1.1.0' apply false
     id 'org.springdoc.openapi-gradle-plugin' version '1.6.0' apply false
@@ -122,23 +122,23 @@ dependencies {
     implementation "commons-codec:commons-codec:1.15"
     // libraries of json
     // https://mvnrepository.com/open-source/json-libraries
-    implementation 'com.alibaba.fastjson2:fastjson2:2.0.32'
+    implementation 'com.alibaba.fastjson2:fastjson2:2.0.33'
     implementation 'com.cedarsoftware:json-io:4.14.0'
     implementation 'com.dslplatform:dsl-json:1.10.0'
     implementation "com.google.code.gson:gson:2.10.1"
     implementation 'jakarta.json:jakarta.json-api:2.1.2'
+    implementation 'org.eclipse.parsson:parsson:1.1.2'
     implementation 'net.minidev:json-smart:2.4.11'
     implementation 'org.apache.groovy:groovy-json:4.0.12'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
     implementation "org.json:json:20230227"
-    implementation 'io.avaje:avaje-jsonb:1.6-RC1'
     runtimeOnly 'com.squareup.moshi:moshi:1.15.0'
     // libraries of jwt
     // https://mvnrepository.com/open-source/json-web-tokens-libraries
     implementation "com.auth0:java-jwt:${auth0JwtVersion}"
     implementation "org.bitbucket.b_c:jose4j:0.9.3"
     implementation "com.nimbusds:nimbus-jose-jwt:9.31"
-    implementation 'io.fusionauth:fusionauth-jwt:5.2.3'
+    implementation 'io.fusionauth:fusionauth-jwt:5.2.4'
     implementation "io.jsonwebtoken:jjwt-api:${jsonwebtokenVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
@@ -153,7 +153,7 @@ dependencies {
     implementation 'com.kosprov.jargon2:jargon2-api:1.1.1'
     implementation 'com.kosprov.jargon2:jargon2-native-ri-backend:1.1.1'
     implementation 'de.svenkubiak:jBCrypt:0.4.3'
-    implementation 'com.password4j:password4j:1.7.0'
+    implementation 'com.password4j:password4j:1.7.1'
     implementation 'org.springframework.security:spring-security-crypto:6.1.0'
     implementation 'io.quarkus:quarkus-elytron-security-common:3.1.0.Final'
     // Log4j

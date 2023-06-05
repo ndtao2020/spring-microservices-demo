@@ -9,6 +9,8 @@ import com.google.gson.Gson;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Payload;
 import groovy.json.JsonGenerator;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -21,17 +23,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SerializeJsonFromDTOTests {
 
+    private static final String AUD = RandomUtils.generateId(10);
+    private static final String JWT_ID = RandomUtils.generateId(20);
+    private static final String ISSUER = "https://taoqn.pages.dev";
+    private static final String SUBJECT = "ndtao2020";
+    private static final long EXP = new Date(System.currentTimeMillis() + (60 * 60 * 1000)).getTime();
+
     static Payload payload = new Payload();
     static String originalJsonData = "";
 
     @BeforeAll
     static void initAll() {
         // init data
-        payload.setAud(RandomUtils.generateId(10));
-        payload.setSub("ndtao2020");
-        payload.setIss("https://taoqn.pages.dev");
-        payload.setJti(RandomUtils.generateId(20));
-        payload.setExp(new Date(System.currentTimeMillis() + (60 * 60 * 1000)).getTime());
+        payload.setAud(AUD);
+        payload.setJti(JWT_ID);
+        payload.setIss(ISSUER);
+        payload.setSub(SUBJECT);
+        payload.setExp(EXP);
         // to json
         originalJsonData = JSON.toJSONString(payload);
     }
@@ -82,5 +90,18 @@ class SerializeJsonFromDTOTests {
     void groovyJson() {
         JsonGenerator jsonGenerator = new JsonGenerator.Options().build();
         assertEquals(originalJsonData.length(), jsonGenerator.toJson(payload).length());
+    }
+
+    @Test
+    @DisplayName("DTO to Json: Jakarta Json")
+    void jakartaJson() {
+        JsonObject json = Json.createObjectBuilder()
+                .add("aud", AUD)
+                .add("jti", JWT_ID)
+                .add("iss", ISSUER)
+                .add("sub", SUBJECT)
+                .add("exp", EXP)
+                .build();
+        assertEquals(originalJsonData.length(), json.toString().length());
     }
 }

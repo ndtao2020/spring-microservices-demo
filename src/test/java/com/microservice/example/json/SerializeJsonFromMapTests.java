@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class SerializeJsonFromMapTests {
 
     static Map<String, String> data = new HashMap<>();
@@ -42,33 +44,33 @@ class SerializeJsonFromMapTests {
     @DisplayName("Map to Json: Jackson")
     void jackson() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        Assertions.assertEquals(originalJsonData, objectMapper.writeValueAsString(data));
+        assertEquals(originalJsonData, objectMapper.writeValueAsString(data));
     }
 
     @Test
     @DisplayName("Map to Json: Gson")
     void gson() {
         Gson gson = new Gson();
-        Assertions.assertEquals(originalJsonData, gson.toJson(data));
+        assertEquals(originalJsonData, gson.toJson(data));
     }
 
     @Test
     @DisplayName("Map to Json: JSONObject")
     void jSONObject() {
         JSONObject jsonObject = new JSONObject(data);
-        Assertions.assertEquals(originalJsonData, jsonObject.toString());
+        assertEquals(originalJsonData, jsonObject.toString());
     }
 
     @Test
     @DisplayName("Map to Json: Cedar Software json-io")
     void cedarJsonIO() {
-        Assertions.assertEquals(originalJsonData, JsonWriter.objectToJson(data, Map.of(JsonWriter.TYPE, false)));
+        assertEquals(originalJsonData, JsonWriter.objectToJson(data, Map.of(JsonWriter.TYPE, false)));
     }
 
     @Test
     @DisplayName("Map to Json: Alibaba fastjson2")
     void alibabaFastjson2() {
-        Assertions.assertEquals(originalJsonData, JSON.toJSONString(data));
+        assertEquals(originalJsonData, JSON.toJSONString(data));
     }
 
     @Test
@@ -77,21 +79,21 @@ class SerializeJsonFromMapTests {
         DslJson<Object> json = new DslJson<>();
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
             json.serialize(data, stream); //will use thread local writer
-            Assertions.assertEquals(originalJsonData, stream.toString(StandardCharsets.UTF_8));
+            assertEquals(originalJsonData, stream.toString(StandardCharsets.UTF_8));
         }
     }
 
     @Test
     @DisplayName("Map to Json: JSON Small")
     void jsonSmall() {
-        Assertions.assertEquals(originalJsonData, JSONValue.toJSONString(data));
+        assertEquals(originalJsonData, JSONValue.toJSONString(data));
     }
 
     @Test
     @DisplayName("Map to Json: Groovy Json")
     void groovyJson() {
         JsonGenerator jsonGenerator = new JsonGenerator.Options().build();
-        Assertions.assertEquals(originalJsonData, jsonGenerator.toJson(data));
+        assertEquals(originalJsonData, jsonGenerator.toJson(data));
     }
 
     @AfterEach
