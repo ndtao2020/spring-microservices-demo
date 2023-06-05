@@ -153,7 +153,7 @@ dependencies {
     implementation 'com.kosprov.jargon2:jargon2-api:1.1.1'
     implementation 'com.kosprov.jargon2:jargon2-native-ri-backend:1.1.1'
     implementation 'de.svenkubiak:jBCrypt:0.4.3'
-    implementation 'com.password4j:password4j:1.7.0'
+    implementation 'com.password4j:password4j:1.7.1'
     implementation 'org.springframework.security:spring-security-crypto:6.1.0'
     implementation 'io.quarkus:quarkus-elytron-security-common:3.1.0.Final'
     // Log4j
