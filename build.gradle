@@ -131,7 +131,7 @@ dependencies {
     implementation 'org.apache.groovy:groovy-json:4.0.12'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
     implementation "org.json:json:20230227"
-    implementation 'io.avaje:avaje-jsonb:1.6-RC1'
+    implementation 'io.avaje:avaje-jsonb:1.6-RC2'
     runtimeOnly 'com.squareup.moshi:moshi:1.15.0'
     // libraries of jwt
     // https://mvnrepository.com/open-source/json-web-tokens-libraries
