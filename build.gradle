@@ -142,7 +142,7 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-api:${jsonwebtokenVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
-    implementation 'io.vertx:vertx-auth-jwt:4.4.2'
+    implementation 'io.vertx:vertx-auth-jwt:4.4.3'
     implementation 'org.jboss.resteasy:jose-jwt:6.2.4.Final'
     // libraries of hashing password
     // https://mvnrepository.com/open-source/hashing-libraries
