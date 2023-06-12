@@ -118,7 +118,7 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     // libraries of base64
     // https://mvnrepository.com/open-source/base64-libraries
-    implementation 'com.google.guava:guava:32.0.0-jre'
+    implementation 'com.google.guava:guava:32.0.1-jre'
     implementation "commons-codec:commons-codec:1.15"
     // libraries of json
     // https://mvnrepository.com/open-source/json-libraries
