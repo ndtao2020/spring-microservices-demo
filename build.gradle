@@ -26,12 +26,9 @@ repositories {
 ext {
     set('jmhVersion', "1.36")
     set('minioVersion', "8.5.3")
-    set('auth0JwtVersion', "4.4.0")
     set('jsonwebtokenVersion', "0.11.5")
     set('firebaseAdminVersion', "9.1.1")
     set('lombokVersion', "1.18.28")
-    set('junitVersion', "5.9.3")
-    set('log4jVersion', "2.20.0")
     set('springdocVersion', "1.7.0")
     set('springCloudVersion', "2022.0.3")
     set('springBootAdminVersion', "3.0.3")
@@ -135,7 +132,7 @@ dependencies {
     runtimeOnly 'com.squareup.moshi:moshi:1.15.0'
     // libraries of jwt
     // https://mvnrepository.com/open-source/json-web-tokens-libraries
-    implementation "com.auth0:java-jwt:${auth0JwtVersion}"
+    implementation "com.auth0:java-jwt:4.4.0"
     implementation "org.bitbucket.b_c:jose4j:0.9.3"
     implementation "com.nimbusds:nimbus-jose-jwt:9.31"
     implementation 'io.fusionauth:fusionauth-jwt:5.2.4'
@@ -166,14 +163,13 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
     // Log4j
-    implementation platform("org.apache.logging.log4j:log4j-bom:${log4jVersion}")
+    implementation platform("org.apache.logging.log4j:log4j-bom:2.20.0")
     implementation "org.apache.logging.log4j:log4j-api"
     runtimeOnly "org.apache.logging.log4j:log4j-core"
     implementation 'commons-logging:commons-logging:1.2'
     // testings
-    testImplementation platform("org.junit:junit-bom:${junitVersion}")
+    testImplementation platform("org.junit:junit-bom:5.9.3")
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
     testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
     testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
