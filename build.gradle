@@ -124,7 +124,7 @@ dependencies {
     // https://mvnrepository.com/open-source/json-libraries
     implementation 'com.alibaba.fastjson2:fastjson2:2.0.33'
     implementation 'com.cedarsoftware:json-io:4.14.0'
-    implementation 'com.dslplatform:dsl-json:1.10.0'
+    implementation 'com.dslplatform:dsl-json:2.0.0'
     implementation "com.google.code.gson:gson:2.10.1"
     implementation 'jakarta.json:jakarta.json-api:2.1.2'
     implementation 'org.eclipse.parsson:parsson:1.1.2'
