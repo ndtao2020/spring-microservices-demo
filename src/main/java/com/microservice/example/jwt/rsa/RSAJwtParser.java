@@ -5,16 +5,20 @@ import com.microservice.example.jwt.Algorithm;
 import com.microservice.example.jwt.Payload;
 
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 
 public class RSAJwtParser {
 
     private final Base64.Decoder decoder = Base64.getUrlDecoder();
-    private final PublicKey publicKey;
+    private final RSAPublicKey publicKey;
     private final Algorithm algorithm;
 
-    public RSAJwtParser(PublicKey publicKey, Algorithm algorithm) {
+    public RSAJwtParser(RSAPublicKey publicKey, Algorithm algorithm) {
         this.publicKey = publicKey;
         this.algorithm = algorithm;
     }

@@ -5,7 +5,11 @@ import com.microservice.example.jwt.Algorithm;
 import com.microservice.example.jwt.Headers;
 import com.microservice.example.jwt.Payload;
 
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.interfaces.RSAPrivateKey;
 import java.util.Base64;
 import java.util.Map;
 
@@ -18,9 +22,9 @@ public class RSAJwtBuilder {
     private final Algorithm algorithm;
     private final byte[] headerBytes;
     private final String headerStr;
-    private final PrivateKey privateKey;
+    private final RSAPrivateKey privateKey;
 
-    public RSAJwtBuilder(PrivateKey privateKey, Algorithm algorithm) {
+    public RSAJwtBuilder(RSAPrivateKey privateKey, Algorithm algorithm) {
         this.privateKey = privateKey;
         this.algorithm = algorithm;
         Map<String, String> map = Map.of(Headers.TYPE, "JWT", Headers.ALGORITHM, algorithm.getValue());
