@@ -50,7 +50,7 @@ class GenerateECDSATokenTests {
     private final NumericDate numericDate = NumericDate.fromMilliseconds(expiresAt.getTime());
     private final ZonedDateTime zoneExpiresAt = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(60);
 
-    private final JWTVerifier verifier = JWT.require(Algorithm.ECDSA256(publicKey, privateKey))
+    private final JWTVerifier verifier = JWT.require(Algorithm.ECDSA256(publicKey))
             .withJWTId(JWT_ID)
             .withIssuer(ISSUER)
             .withSubject(SUBJECT)
@@ -100,7 +100,7 @@ class GenerateECDSATokenTests {
 
     @Test
     void auth0JWT() {
-        Algorithm algorithm = Algorithm.ECDSA256(publicKey, privateKey);
+        Algorithm algorithm = Algorithm.ECDSA256(privateKey);
 
         String token = JWT.create()
                 .withJWTId(JWT_ID)

@@ -36,6 +36,20 @@ public class RSAJwtParser {
         return payload;
     }
 
+    public Payload verifyIndexOf(String t) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+        int i1 = t.indexOf(RSAJwtBuilder.DELIMITER);
+        int i2 = t.indexOf(RSAJwtBuilder.DELIMITER, i1 + 1);
+        byte[] n = t.substring(i1 + 1, i2).getBytes(StandardCharsets.UTF_8);
+        if (!verifySignature(t.substring(0, i1).getBytes(StandardCharsets.UTF_8), n, decoder.decode(t.substring(i2 + 1)))) {
+            throw new SignatureException("Token is invalid !");
+        }
+        Payload payload = JSON.parseObject(decoder.decode(n), Payload.class);
+        if (payload.getExp() < System.currentTimeMillis() / 1000) {
+            throw new SignatureException("Token is expiration !");
+        }
+        return payload;
+    }
+
     private boolean verifySignature(byte[] headerBytes, byte[] payloadBytes, byte[] signatureBytes) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
         final Signature s = Signature.getInstance(algorithm.getJcaName());
         s.initVerify(publicKey);

@@ -45,7 +45,7 @@ class VerifyECDSATokenTests {
             .withIssuer(ISSUER)
             .withSubject(SUBJECT)
             .withExpiresAt(new Date(System.currentTimeMillis() + (60 * 60 * 1000)))
-            .sign(Algorithm.ECDSA256(publicKey, privateKey));
+            .sign(Algorithm.ECDSA256(privateKey));
 
     @BeforeAll
     static void initAll() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
@@ -70,7 +70,7 @@ class VerifyECDSATokenTests {
 
     @Test
     void auth0JWT() {
-        JWTVerifier verifier = JWT.require(Algorithm.ECDSA256(publicKey, privateKey))
+        JWTVerifier verifier = JWT.require(Algorithm.ECDSA256(publicKey))
                 .withJWTId(JWT_ID)
                 .withIssuer(ISSUER)
                 .withSubject(SUBJECT)

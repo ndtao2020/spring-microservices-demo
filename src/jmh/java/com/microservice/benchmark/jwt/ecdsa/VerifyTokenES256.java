@@ -38,7 +38,6 @@ public class VerifyTokenES256 {
     private static final String SUBJECT = "ndtao2020";
 
     private ECPublicKey publicKey;
-    private ECPrivateKey privateKey;
     private String generatedToken;
 
     @Setup
@@ -48,14 +47,13 @@ public class VerifyTokenES256 {
         KeyPair keyPair = generator.generateKeyPair();
         // assign variables
         publicKey = (ECPublicKey) keyPair.getPublic();
-        privateKey = (ECPrivateKey) keyPair.getPrivate();
         // generate a token
         generatedToken = JWT.create()
                 .withJWTId(JWT_ID)
                 .withIssuer(ISSUER)
                 .withSubject(SUBJECT)
                 .withExpiresAt(new Date(System.currentTimeMillis() + (60 * 60 * 1000)))
-                .sign(Algorithm.ECDSA256(publicKey, privateKey));
+                .sign(Algorithm.ECDSA256((ECPrivateKey) keyPair.getPrivate()));
     }
 
     @Benchmark
@@ -66,7 +64,7 @@ public class VerifyTokenES256 {
 
     @Benchmark
     public JWTVerifier auth0JWT() {
-        return JWT.require(Algorithm.ECDSA256(publicKey, privateKey))
+        return JWT.require(Algorithm.ECDSA256(publicKey))
                 .withJWTId(JWT_ID)
                 .withIssuer(ISSUER)
                 .withSubject(SUBJECT)

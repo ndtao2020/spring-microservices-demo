@@ -24,7 +24,6 @@ import org.openjdk.jmh.annotations.*;
 
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -46,7 +45,6 @@ public class GenerateTokenES256 {
     private final NumericDate numericDate = NumericDate.fromMilliseconds(expiresAt.getTime());
     private final ZonedDateTime zoneExpiresAt = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(60);
 
-    private ECPublicKey publicKey;
     private ECPrivateKey privateKey;
 
     @Setup
@@ -55,7 +53,6 @@ public class GenerateTokenES256 {
         generator.initialize(new ECGenParameterSpec("secp256r1"), new SecureRandom());
         KeyPair keyPair = generator.generateKeyPair();
         // assign variables
-        publicKey = (ECPublicKey) keyPair.getPublic();
         privateKey = (ECPrivateKey) keyPair.getPrivate();
     }
 
@@ -92,7 +89,7 @@ public class GenerateTokenES256 {
                 .withIssuer(ISSUER)
                 .withSubject(SUBJECT)
                 .withExpiresAt(expiresAt)
-                .sign(Algorithm.ECDSA256(publicKey, privateKey));
+                .sign(Algorithm.ECDSA256(privateKey));
     }
 
     @Benchmark

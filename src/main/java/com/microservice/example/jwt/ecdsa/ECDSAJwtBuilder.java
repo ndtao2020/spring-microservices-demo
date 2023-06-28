@@ -3,7 +3,6 @@ package com.microservice.example.jwt.ecdsa;
 import com.alibaba.fastjson2.JSON;
 import com.microservice.example.jwt.Algorithm;
 import com.microservice.example.jwt.Headers;
-import com.microservice.example.jwt.Payload;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -32,20 +31,8 @@ public class ECDSAJwtBuilder {
         this.headerStr = new String(headerBytes, UTF_8) + DELIMITER;
     }
 
-    public String compact(Payload payload) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+    public String compact(Object payload) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
         byte[] bytes = encoder.encode(JSON.toJSONBytes(payload));
-        final Signature s = Signature.getInstance(algorithm.getJcaName());
-        s.initSign(privateKey);
-        s.update(headerBytes);
-        s.update((byte) 46);
-        s.update(bytes);
-        // convert from the ECDSA JWS signature to the ASN.1/DER encoded signature.
-        byte[] asn1Primitive = convertFromASN1toRS(s.sign(), algorithm.getEcNumberSize());
-        return headerStr + new String(bytes, UTF_8) + DELIMITER + new String(encoder.encode(asn1Primitive), UTF_8);
-    }
-
-    public String compact(Map<String, ?> payloadMap) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
-        byte[] bytes = encoder.encode(JSON.toJSONBytes(payloadMap));
         final Signature s = Signature.getInstance(algorithm.getJcaName());
         s.initSign(privateKey);
         s.update(headerBytes);

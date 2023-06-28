@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.microservice.example.RandomUtils;
+import com.microservice.example.jwt.rsa.RSAJwtArrayBuilder;
 import com.microservice.example.jwt.rsa.RSAJwtBuilder;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -49,7 +50,7 @@ class GenerateRSATokenTests {
     private final NumericDate numericDate = NumericDate.fromMilliseconds(expiresAt.getTime());
     private final ZonedDateTime zoneExpiresAt = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(60);
 
-    private final JWTVerifier verifier = JWT.require(Algorithm.RSA256(publicKey, privateKey))
+    private final JWTVerifier verifier = JWT.require(Algorithm.RSA256(publicKey))
             .withJWTId(JWT_ID)
             .withIssuer(ISSUER)
             .withSubject(SUBJECT)
@@ -98,8 +99,40 @@ class GenerateRSATokenTests {
     }
 
     @Test
+    void customJWTArrayCopy() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        RSAJwtBuilder jwtBuilder = new RSAJwtBuilder(privateKey, com.microservice.example.jwt.Algorithm.RS256);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put(Claims.JWT_ID, JWT_ID);
+        map.put(Claims.ISSUER, ISSUER);
+        map.put(Claims.SUBJECT, SUBJECT);
+        map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
+
+        String token = jwtBuilder.compactArray(map);
+
+        assertNotNull(token);
+        assertNotNull(verifier.verify(token));
+    }
+
+    @Test
+    void customJWTArrayCopy2() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        RSAJwtArrayBuilder jwtBuilder = new RSAJwtArrayBuilder(privateKey, com.microservice.example.jwt.Algorithm.RS256);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put(Claims.JWT_ID, JWT_ID);
+        map.put(Claims.ISSUER, ISSUER);
+        map.put(Claims.SUBJECT, SUBJECT);
+        map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
+
+        String token = jwtBuilder.compactArray(map);
+
+        assertNotNull(token);
+        assertNotNull(verifier.verify(token));
+    }
+
+    @Test
     void auth0JWT() {
-        Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
+        Algorithm algorithm = Algorithm.RSA256(privateKey);
 
         String token = JWT.create()
                 .withJWTId(JWT_ID)

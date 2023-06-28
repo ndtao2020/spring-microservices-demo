@@ -47,7 +47,7 @@ class VerifyRSATokenTests {
             .withIssuer(ISSUER)
             .withSubject(SUBJECT)
             .withExpiresAt(new Date(System.currentTimeMillis() + (60 * 60 * 1000)))
-            .sign(Algorithm.RSA256(publicKey, privateKey));
+            .sign(Algorithm.RSA256(privateKey));
 
     @BeforeAll
     static void initAll() throws NoSuchAlgorithmException {
@@ -71,8 +71,19 @@ class VerifyRSATokenTests {
     }
 
     @Test
+    void customJWTIndexOf() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        RSAJwtParser jwtParser = new RSAJwtParser(publicKey, com.microservice.example.jwt.Algorithm.RS256);
+        Payload payload = jwtParser.verifyIndexOf(generatedToken);
+        // Assert the subject of the JWT is as expected
+        assertNotNull(payload);
+        assertEquals(JWT_ID, payload.getJti());
+        assertEquals(ISSUER, payload.getIss());
+        assertEquals(SUBJECT, payload.getSub());
+    }
+
+    @Test
     void auth0JWT() {
-        JWTVerifier verifier = JWT.require(Algorithm.RSA256(publicKey, privateKey))
+        JWTVerifier verifier = JWT.require(Algorithm.RSA256(publicKey))
                 .withJWTId(JWT_ID)
                 .withIssuer(ISSUER)
                 .withSubject(SUBJECT)

@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Claims;
 import com.microservice.example.jwt.Payload;
+import com.microservice.example.jwt.rsa.RSAJwtArrayBuilder;
 import com.microservice.example.jwt.rsa.RSAJwtBuilder;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -25,7 +26,6 @@ import org.openjdk.jmh.annotations.*;
 
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -46,7 +46,6 @@ public class GenerateTokenRS256 {
     private final NumericDate numericDate = NumericDate.fromMilliseconds(expiresAt.getTime());
     private final ZonedDateTime zoneExpiresAt = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(60);
 
-    private RSAPublicKey publicKey;
     private RSAPrivateKey privateKey;
 
     @Setup
@@ -55,7 +54,6 @@ public class GenerateTokenRS256 {
         generator.initialize(2048, new SecureRandom());
         KeyPair keyPair = generator.generateKeyPair();
         // assign variables
-        publicKey = (RSAPublicKey) keyPair.getPublic();
         privateKey = (RSAPrivateKey) keyPair.getPrivate();
     }
 
@@ -86,13 +84,39 @@ public class GenerateTokenRS256 {
     }
 
     @Benchmark
+    public String customJWTArrayCopy() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        RSAJwtBuilder jwtBuilder = new RSAJwtBuilder(privateKey, com.microservice.example.jwt.Algorithm.RS256);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put(Claims.JWT_ID, JWT_ID);
+        map.put(Claims.ISSUER, ISSUER);
+        map.put(Claims.SUBJECT, SUBJECT);
+        map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
+
+        return jwtBuilder.compactArray(map);
+    }
+
+    @Benchmark
+    public String customJWTArrayCopy2() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        RSAJwtArrayBuilder jwtBuilder = new RSAJwtArrayBuilder(privateKey, com.microservice.example.jwt.Algorithm.RS256);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put(Claims.JWT_ID, JWT_ID);
+        map.put(Claims.ISSUER, ISSUER);
+        map.put(Claims.SUBJECT, SUBJECT);
+        map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
+
+        return jwtBuilder.compactArray(map);
+    }
+
+    @Benchmark
     public String auth0JWT() {
         return JWT.create()
                 .withJWTId(JWT_ID)
                 .withIssuer(ISSUER)
                 .withSubject(SUBJECT)
                 .withExpiresAt(expiresAt)
-                .sign(Algorithm.RSA256(publicKey, privateKey));
+                .sign(Algorithm.RSA256(privateKey));
     }
 
     @Benchmark

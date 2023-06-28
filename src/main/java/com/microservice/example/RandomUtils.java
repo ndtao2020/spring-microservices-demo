@@ -14,6 +14,10 @@ public class RandomUtils {
     public static final char[] R_O_U_Z_CHAR = (R + O + U + Z).toCharArray();
     private static final RandomGenerator m = generator(null); // Compliant for security-sensitive use cases
 
+    private RandomUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static RandomGenerator generator(Long seed) {
         if (seed == null) {
             return new Random();
@@ -35,5 +39,9 @@ public class RandomUtils {
 
     public static String generatePassword(int l) {
         return random(l, R_O_U_Z_CHAR);
+    }
+
+    public static int generateInt(int min, int max) {
+        return m.nextInt(max - min + 1) + min;
     }
 }

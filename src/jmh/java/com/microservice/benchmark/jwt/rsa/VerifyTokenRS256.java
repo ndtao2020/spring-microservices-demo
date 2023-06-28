@@ -40,7 +40,6 @@ public class VerifyTokenRS256 {
     private static final String SUBJECT = "ndtao2020";
 
     private RSAPublicKey publicKey;
-    private RSAPrivateKey privateKey;
     private String generatedToken;
 
     @Setup
@@ -50,14 +49,13 @@ public class VerifyTokenRS256 {
         KeyPair keyPair = generator.generateKeyPair();
         // assign variables
         publicKey = (RSAPublicKey) keyPair.getPublic();
-        privateKey = (RSAPrivateKey) keyPair.getPrivate();
         // generate a token
         generatedToken = JWT.create()
                 .withJWTId(JWT_ID)
                 .withIssuer(ISSUER)
                 .withSubject(SUBJECT)
                 .withExpiresAt(new Date(System.currentTimeMillis() + (60 * 60 * 1000)))
-                .sign(Algorithm.RSA256(publicKey, privateKey));
+                .sign(Algorithm.RSA256(publicKey, (RSAPrivateKey) keyPair.getPrivate()));
     }
 
     @Benchmark
@@ -67,8 +65,14 @@ public class VerifyTokenRS256 {
     }
 
     @Benchmark
+    public Payload customJWTIndexOf() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        RSAJwtParser jwtParser = new RSAJwtParser(publicKey, com.microservice.example.jwt.Algorithm.RS256);
+        return jwtParser.verifyIndexOf(generatedToken);
+    }
+
+    @Benchmark
     public JWTVerifier auth0JWT() {
-        return JWT.require(Algorithm.RSA256(publicKey, privateKey))
+        return JWT.require(Algorithm.RSA256(publicKey))
                 .withJWTId(JWT_ID)
                 .withIssuer(ISSUER)
                 .withSubject(SUBJECT)
