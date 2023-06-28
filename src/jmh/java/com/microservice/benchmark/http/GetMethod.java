@@ -19,22 +19,20 @@ import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.openjdk.jmh.annotations.*;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
-@State(Scope.Benchmark)
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
+//@State(Scope.Benchmark)
+//@BenchmarkMode(Mode.AverageTime)
+//@OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class GetMethod {
 
     public static final String API_URL = "https://jsonplaceholder.typicode.com/posts";
 
-    @Benchmark
+    // @Benchmark
     public JSONArray java() throws IOException {
         final URL url = new URL(API_URL);
         final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
@@ -44,7 +42,7 @@ public class GetMethod {
         }
     }
 
-    @Benchmark
+    // @Benchmark
     public JSONArray apacheHttp() throws IOException {
         HttpGet httpGet = new HttpGet(API_URL);
         try (final CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -55,7 +53,7 @@ public class GetMethod {
         }
     }
 
-    @Benchmark
+    // @Benchmark
     public JSONArray apacheHttpHandle() throws IOException, HttpException {
         HttpGet httpGet = new HttpGet(API_URL);
         HttpHost httpHost = RoutingSupport.determineHost(httpGet);
@@ -70,7 +68,7 @@ public class GetMethod {
         }
     }
 
-    @Benchmark
+    // @Benchmark
     public JSONArray okhttp() throws IOException {
         final OkHttpClient client = new OkHttpClient();
         final Request request = new Request.Builder().url(API_URL).build();
@@ -79,7 +77,7 @@ public class GetMethod {
         }
     }
 
-    @Benchmark
+    // @Benchmark
     public JSONArray jetty() throws Exception {
         final HttpClient client = new HttpClient();
         client.start();
@@ -93,7 +91,7 @@ public class GetMethod {
         return jsonArray;
     }
 
-    @Benchmark
+    // @Benchmark
     public JSONArray jodd() {
         final HttpResponse response = HttpRequest.get(API_URL).send();
         return JSON.parseArray(response.bodyBytes());

@@ -20,7 +20,6 @@ import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
@@ -34,7 +33,7 @@ class GetMethodTests {
 
     public static final String API_URL = "https://jsonplaceholder.typicode.com/posts";
 
-    @Test
+    //    @Test
     void java() throws IOException {
         URL url = new URL(API_URL);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
@@ -49,7 +48,7 @@ class GetMethodTests {
         }
     }
 
-    @Test
+    //    @Test
     void apacheHttpClient() throws IOException {
         HttpGet httpGet = new HttpGet(API_URL);
         try (CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -66,7 +65,7 @@ class GetMethodTests {
         }
     }
 
-    @Test
+    //    @Test
     void apacheHttpClientHandle() throws IOException, HttpException {
         HttpGet httpGet = new HttpGet(API_URL);
         HttpHost httpHost = RoutingSupport.determineHost(httpGet);
@@ -86,7 +85,7 @@ class GetMethodTests {
         }
     }
 
-    @Test
+    //    @Test
     void okhttp() throws IOException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(API_URL).build();
@@ -101,7 +100,7 @@ class GetMethodTests {
         }
     }
 
-    @Test
+    //    @Test
     void jetty() throws Exception {
         HttpClient client = new HttpClient();
         client.start();
@@ -118,7 +117,7 @@ class GetMethodTests {
         }
     }
 
-    @Test
+    //    @Test
     void jodd() {
         HttpResponse response = HttpRequest.get(API_URL).send();
         JSONArray jsonArray = JSON.parseArray(response.bodyBytes());

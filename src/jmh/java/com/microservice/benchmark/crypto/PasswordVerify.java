@@ -27,29 +27,25 @@ public class PasswordVerify {
     static String salt = RandomUtils.generatePassword(Argon2Constants.DEFAULT_SALT_LENGTH);
     static byte[] saltBytes = salt.getBytes(StandardCharsets.UTF_8);
     static String readPasswordFromUser = RandomUtils.generatePassword(20);
-    static char[] readPasswordFromUserChars = readPasswordFromUser.toCharArray();
-    static byte[] readPasswordFromUserBytes = readPasswordFromUser.getBytes(StandardCharsets.UTF_8);
-
-    // ======================================================
-
     private static final String BCRYPT_PASSWORD_10 = new BCryptPasswordEncoder().encode(readPasswordFromUser);
     private static final byte[] BCRYPT_PASSWORD_BYTES_10 = BCRYPT_PASSWORD_10.getBytes(StandardCharsets.UTF_8);
 
     // ======================================================
-
     private static final String SCRYPT_PASSWORD = new SCryptPasswordEncoder(65536, 8, 2, Argon2Constants.DEFAULT_HASH_LENGTH, Argon2Constants.DEFAULT_SALT_LENGTH)
             .encode(readPasswordFromUser);
     private static final byte[] SCRYPT_PASSWORD_BYTES = SCRYPT_PASSWORD.getBytes(StandardCharsets.UTF_8);
 
     // ======================================================
-
     private static final String PBKDF2_PASSWORD = new Pbkdf2PasswordEncoder(salt, Argon2Constants.DEFAULT_SALT_LENGTH, 310000, Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256)
             .encode(readPasswordFromUser);
+    static char[] readPasswordFromUserChars = readPasswordFromUser.toCharArray();
 
     // ======================================================
-
     private static final String ARGON2_PASSWORD = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id, Argon2Constants.DEFAULT_SALT_LENGTH, Argon2Constants.DEFAULT_HASH_LENGTH)
             .hash(5, 65536, 2, readPasswordFromUserChars);
+
+    // ======================================================
+    static byte[] readPasswordFromUserBytes = readPasswordFromUser.getBytes(StandardCharsets.UTF_8);
 
     // ======================================================
 

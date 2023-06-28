@@ -34,12 +34,8 @@ public class CombiningByteArrays {
     @Benchmark
     public byte[] plainJava() {
         final byte[] combined = new byte[first.length + second.length + third.length + fourth.length];
-        for (int i = 0; i < first.length; i++) {
-            combined[i] = first[i];
-        }
-        for (int i = 0; i < second.length; i++) {
-            combined[i + first.length] = second[i];
-        }
+        System.arraycopy(first, 0, combined, 0, first.length);
+        System.arraycopy(second, 0, combined, 0 + first.length, second.length);
         for (int i = 0; i < third.length; i++) {
             combined[i + first.length + second.length] = third[i];
         }
