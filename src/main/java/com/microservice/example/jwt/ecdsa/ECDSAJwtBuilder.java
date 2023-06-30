@@ -16,7 +16,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ECDSAJwtBuilder {
 
-    public static final String DELIMITER = ".";
+    public static final char DELIMITER = '.';
     private final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
     private final Algorithm algorithm;
     private final byte[] headerBytes;

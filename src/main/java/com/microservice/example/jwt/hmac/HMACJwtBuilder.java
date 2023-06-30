@@ -17,7 +17,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HMACJwtBuilder {
 
-    public static final String DELIMITER = ".";
+    public static final char DELIMITER = '.';
     private final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
     private final SecretKey secretKey;
     private final Algorithm algorithm;

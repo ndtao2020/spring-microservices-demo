@@ -8,18 +8,17 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.random.RandomGenerator;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class CombiningByteArrays {
+public class CombineByteArrays {
 
-    @Param({"10", "100"})
-    public int max;
-
-    private final byte[] first = new byte[RandomUtils.generateInt(5, max)];
-    private final byte[] second = new byte[RandomUtils.generateInt(5, max)];
-    private final byte[] third = new byte[RandomUtils.generateInt(5, max)];
-    private final byte[] fourth = new byte[RandomUtils.generateInt(5, max)];
+    private final byte[] first = new byte[RandomUtils.generateInt(5, 50)];
+    private final byte[] second = new byte[RandomUtils.generateInt(5, 50)];
+    private final byte[] third = new byte[RandomUtils.generateInt(5, 50)];
+    private final byte[] fourth = new byte[RandomUtils.generateInt(5, 50)];
 
     @Setup
     public void setup() {
@@ -32,41 +31,51 @@ public class CombiningByteArrays {
     }
 
     @Benchmark
-    public byte[] plainJava() {
-        final byte[] combined = new byte[first.length + second.length + third.length + fourth.length];
+    public String plainJava() {
+        byte[] combined = new byte[first.length + second.length + third.length + fourth.length];
         System.arraycopy(first, 0, combined, 0, first.length);
-        System.arraycopy(second, 0, combined, 0 + first.length, second.length);
+        System.arraycopy(second, 0, combined, first.length, second.length);
         for (int i = 0; i < third.length; i++) {
             combined[i + first.length + second.length] = third[i];
         }
         for (int i = 0; i < fourth.length; i++) {
             combined[i + first.length + second.length + third.length] = fourth[i];
         }
-        return combined;
+        return new String(combined, UTF_8);
     }
 
     @Benchmark
-    public byte[] systemArrayCopy() {
-        final byte[] combined = new byte[first.length + second.length + third.length + fourth.length];
+    public String systemArrayCopy() {
+        byte[] combined = new byte[first.length + second.length + third.length + fourth.length];
         System.arraycopy(first, 0, combined, 0, first.length);
         System.arraycopy(second, 0, combined, first.length, second.length);
         System.arraycopy(third, 0, combined, first.length + second.length, third.length);
         System.arraycopy(fourth, 0, combined, first.length + second.length + third.length, fourth.length);
-        return combined;
+        return new String(combined, UTF_8);
     }
 
     @Benchmark
-    public byte[] byteBuffer() {
+    public String byteBuffer() {
         final ByteBuffer buff = ByteBuffer.wrap(new byte[first.length + second.length + third.length + fourth.length]);
         buff.put(first);
         buff.put(second);
         buff.put(third);
         buff.put(fourth);
-        return buff.array();
+        return new String(buff.array(), UTF_8);
     }
 
     @Benchmark
-    public byte[] byteArrayOutputStream() {
+    public String byteArrayOutputStream() {
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(first, 0, first.length);
+        out.write(second, 0, second.length);
+        out.write(third, 0, third.length);
+        out.write(fourth, 0, fourth.length);
+        return out.toString(UTF_8);
+    }
+
+    @Benchmark
+    public byte[] byteArrayOutputStream2() {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.write(first, 0, first.length);
         out.write(second, 0, second.length);

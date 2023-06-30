@@ -16,8 +16,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class RSAJwtBuilder {
 
-    public static final String DELIMITER = ".";
-    protected static final byte[] DELIMITER_BYTES = DELIMITER.getBytes(UTF_8);
+    public static final char DELIMITER = '.';
+    protected static final byte[] DELIMITER_BYTES = {(byte) 46};
     private final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
     private final Algorithm algorithm;
     private final byte[] headerBytes;
