@@ -43,8 +43,13 @@ class CombiningByteArraysTests {
     @Test
     void plainJava() {
         byte[] combined = new byte[first.length + second.length + third.length + fourth.length];
-        System.arraycopy(first, 0, combined, 0, first.length);
-        System.arraycopy(second, 0, combined, 0 + first.length, second.length);
+        // for loop
+        for (int i = 0; i < first.length; i++) {
+            combined[i] = first[i];
+        }
+        for (int i = 0; i < second.length; i++) {
+            combined[i + first.length] = second[i];
+        }
         for (int i = 0; i < third.length; i++) {
             combined[i + first.length + second.length] = third[i];
         }
@@ -67,8 +72,19 @@ class CombiningByteArraysTests {
     }
 
     @Test
-    void byteBuffer() {
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[first.length + second.length + third.length + fourth.length]);
+    void byteBufferWrap() {
+        final ByteBuffer buffer = ByteBuffer.wrap(new byte[first.length + second.length + third.length + fourth.length]);
+        buffer.put(first);
+        buffer.put(second);
+        buffer.put(third);
+        buffer.put(fourth);
+        // assert
+        assertArrayEquals(expectedArray, buffer.array());
+    }
+
+    @Test
+    void byteBufferAllocate() {
+        final ByteBuffer buffer = ByteBuffer.allocate(first.length + second.length + third.length + fourth.length);
         buffer.put(first);
         buffer.put(second);
         buffer.put(third);

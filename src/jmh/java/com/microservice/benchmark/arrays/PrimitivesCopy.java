@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @State(Scope.Thread)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 10)
 public class PrimitivesCopy {
 
     @Param({"10", "1000000"})

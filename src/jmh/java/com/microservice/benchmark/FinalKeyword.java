@@ -2,6 +2,7 @@ package com.microservice.benchmark;
 
 import org.openjdk.jmh.annotations.*;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -19,20 +20,6 @@ public class FinalKeyword {
     private static final String TOKEN = new String(TOKEN_HEADER, UTF_8) + DELIMITER + new String(TOKEN_PAYLOAD, UTF_8) + DELIMITER + new String(TOKEN_SIGNATURE, UTF_8);
 
     @Benchmark
-    public static String concatNonFinalStrings() {
-        String x = "x";
-        String y = "y";
-        return x + y;
-    }
-
-    @Benchmark
-    public static String concatFinalStrings() {
-        final String x = "x";
-        final String y = "y";
-        return x + y;
-    }
-
-    @Benchmark
     public int indexOfWithChar() {
         return TOKEN.indexOf('.');
     }
@@ -48,7 +35,7 @@ public class FinalKeyword {
     }
 
     @Benchmark
-    public String concatenateStringsWithStringBuilder() {
+    public String concatenateStringsStringBuilder() {
         StringBuilder builder = new StringBuilder();
         builder.append(new String(TOKEN_HEADER, UTF_8));
         builder.append(DELIMITER);
@@ -58,8 +45,26 @@ public class FinalKeyword {
         return builder.toString();
     }
 
+//    @Benchmark
+//    public byte[] plainJava() {
+//        byte[] bytes = new byte[TOKEN_HEADER.length + DELIMITER_BYTES.length + TOKEN_PAYLOAD.length + DELIMITER_BYTES.length + TOKEN_SIGNATURE.length];
+//        // for loop
+//        for (int i = 0; i < TOKEN_HEADER.length + 1; i++) {
+//            bytes[i] = TOKEN_HEADER[i];
+//        }
+//        bytes[TOKEN_HEADER.length] = DELIMITER_BYTES[0];
+//        for (int i = 0; i < TOKEN_PAYLOAD.length; i++) {
+//            bytes[i + TOKEN_HEADER.length + DELIMITER_BYTES.length] = TOKEN_PAYLOAD[i];
+//        }
+//        bytes[TOKEN_HEADER.length + DELIMITER_BYTES.length + TOKEN_PAYLOAD.length] = DELIMITER_BYTES[0];
+//        for (int i = 0; i < TOKEN_SIGNATURE.length; i++) {
+//            bytes[i + TOKEN_HEADER.length + DELIMITER_BYTES.length + TOKEN_PAYLOAD.length + DELIMITER_BYTES.length] = TOKEN_SIGNATURE[i];
+//        }
+//        return bytes;
+//    }
+
     @Benchmark
-    public String concatenateStringsWithArrays() {
+    public String concatenateStringsArrays() {
         // init new array
         byte[] bytes = new byte[TOKEN_HEADER.length + DELIMITER_BYTES.length + TOKEN_PAYLOAD.length + DELIMITER_BYTES.length + TOKEN_SIGNATURE.length];
         // copy new array
@@ -70,5 +75,31 @@ public class FinalKeyword {
         System.arraycopy(TOKEN_SIGNATURE, 0, bytes, TOKEN_HEADER.length + DELIMITER_BYTES.length + TOKEN_PAYLOAD.length + DELIMITER_BYTES.length, TOKEN_SIGNATURE.length);
         // return token
         return new String(bytes, UTF_8);
+    }
+
+    @Benchmark
+    public String concatenateStringsByteBufferWrap() {
+        // init new array
+        final ByteBuffer buff = ByteBuffer.wrap(new byte[TOKEN_HEADER.length + DELIMITER_BYTES.length + TOKEN_PAYLOAD.length + DELIMITER_BYTES.length + TOKEN_SIGNATURE.length]);
+        buff.put(TOKEN_HEADER);
+        buff.put(DELIMITER_BYTES);
+        buff.put(TOKEN_PAYLOAD);
+        buff.put(DELIMITER_BYTES);
+        buff.put(TOKEN_SIGNATURE);
+        // return token
+        return new String(buff.array(), UTF_8);
+    }
+
+    @Benchmark
+    public String concatenateStringsByteBufferAllocate() {
+        // init new array
+        final ByteBuffer buff = ByteBuffer.allocate(TOKEN_HEADER.length + DELIMITER_BYTES.length + TOKEN_PAYLOAD.length + DELIMITER_BYTES.length + TOKEN_SIGNATURE.length);
+        buff.put(TOKEN_HEADER);
+        buff.put(DELIMITER_BYTES);
+        buff.put(TOKEN_PAYLOAD);
+        buff.put(DELIMITER_BYTES);
+        buff.put(TOKEN_SIGNATURE);
+        // return token
+        return new String(buff.array(), UTF_8);
     }
 }
