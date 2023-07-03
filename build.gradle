@@ -127,7 +127,7 @@ dependencies {
     implementation 'jakarta.json:jakarta.json-api:2.1.2'
     implementation 'org.eclipse.parsson:parsson:1.1.2'
     implementation 'net.minidev:json-smart:2.4.11'
-    implementation 'org.apache.groovy:groovy-json:4.0.12'
+    implementation 'org.apache.groovy:groovy-json:4.0.13'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
     implementation "org.json:json:20230618"
     runtimeOnly 'com.squareup.moshi:moshi:1.15.0'
