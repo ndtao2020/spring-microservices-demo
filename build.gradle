@@ -116,7 +116,7 @@ dependencies {
     // libraries of base64
     // https://mvnrepository.com/open-source/base64-libraries
     implementation 'com.google.guava:guava:32.1.1-jre'
-    implementation "commons-codec:commons-codec:1.15"
+    implementation "commons-codec:commons-codec:1.16.0"
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     // libraries of json
     // https://mvnrepository.com/open-source/json-libraries
