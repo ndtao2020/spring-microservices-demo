@@ -135,7 +135,7 @@ dependencies {
     // https://mvnrepository.com/open-source/json-web-tokens-libraries
     implementation "com.auth0:java-jwt:4.4.0"
     implementation "org.bitbucket.b_c:jose4j:0.9.3"
-    implementation "com.nimbusds:nimbus-jose-jwt:9.31"
+    implementation "com.nimbusds:nimbus-jose-jwt:9.37.3"
     implementation 'io.fusionauth:fusionauth-jwt:5.2.4'
     implementation "io.jsonwebtoken:jjwt-api:${jsonwebtokenVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
