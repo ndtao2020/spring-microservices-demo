@@ -64,7 +64,7 @@ public class DeserializeJsonToDTO {
 
     @Benchmark
     public Payload cedarJsonIO() {
-        final JsonObject<String, Object> jsonObject = (JsonObject) JsonReader.jsonToJava(jsonValue);
+        final JsonObject jsonObject = (JsonObject) JsonReader.jsonToJava(jsonValue);
 
         Payload dto = new Payload();
 

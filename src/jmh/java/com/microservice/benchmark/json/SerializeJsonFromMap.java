@@ -49,10 +49,10 @@ public class SerializeJsonFromMap {
         return jsonObject.toString();
     }
 
-    @Benchmark
-    public String cedarJsonIO() {
-        return JsonWriter.objectToJson(data, Map.of(JsonWriter.TYPE, false));
-    }
+//    @Benchmark
+//    public String cedarJsonIO() {
+//        return JsonWriter.objectToJson(data, Map.of(JsonWriter.TYPE, false));
+//    }
 
     @Benchmark
     public String alibabaFastjson2() {

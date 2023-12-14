@@ -80,8 +80,8 @@ public class VerifyTokenHS256 {
 
     @Benchmark
     public Jwt jsonWebToken() {
-        return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretBytes))
+        return Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(secretBytes))
                 .requireId(JWT_ID)
                 .requireIssuer(ISSUER)
                 .requireSubject(SUBJECT)

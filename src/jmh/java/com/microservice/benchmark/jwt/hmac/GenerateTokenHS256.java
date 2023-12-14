@@ -96,11 +96,11 @@ public class GenerateTokenHS256 {
     @Benchmark
     public String jsonWebToken() {
         return Jwts.builder()
-                .setId(JWT_ID)
-                .setIssuer(ISSUER)
-                .setSubject(SUBJECT)
-                .setExpiration(expiresAt)
-                .signWith(Keys.hmacShaKeyFor(secretBytes), SignatureAlgorithm.HS256)
+                .id(JWT_ID)
+                .issuer(ISSUER)
+                .subject(SUBJECT)
+                .expiration(expiresAt)
+                .signWith(Keys.hmacShaKeyFor(secretBytes))
                 .compact();
     }
 

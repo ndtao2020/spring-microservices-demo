@@ -70,10 +70,10 @@ public class SerializeJsonFromDTO {
         return jsonObject.toString();
     }
 
-    @Benchmark
-    public String cedarJsonIO() {
-        return JsonWriter.objectToJson(payload, Map.of(JsonWriter.TYPE, false));
-    }
+//    @Benchmark
+//    public String cedarJsonIO() {
+//        return JsonWriter.objectToJson(payload, Map.of(JsonWriter.TYPE, false));
+//    }
 
     @Benchmark
     public String alibabaFastjson2() {

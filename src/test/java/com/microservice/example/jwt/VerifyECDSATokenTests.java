@@ -80,8 +80,8 @@ class VerifyECDSATokenTests {
 
     @Test
     void jsonWebToken() {
-        JwtParser jwtParser = Jwts.parserBuilder()
-                .setSigningKey(publicKey)
+        JwtParser jwtParser = Jwts.parser()
+                .verifyWith(publicKey)
                 .requireId(JWT_ID)
                 .requireIssuer(ISSUER)
                 .requireSubject(SUBJECT)

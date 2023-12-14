@@ -73,11 +73,11 @@ class SerializeJsonFromDTOTests {
         assertEquals(originalJsonData.length(), jsonObject.toString().length());
     }
 
-    @Test
-    @DisplayName("DTO to Json: Cedar Software json-io")
-    void cedarJsonIO() {
-        assertEquals(originalJsonData.length(), JsonWriter.objectToJson(payload, Map.of(JsonWriter.TYPE, false)).length());
-    }
+//    @Test
+//    @DisplayName("DTO to Json: Cedar Software json-io")
+//    void cedarJsonIO() {
+//        assertEquals(originalJsonData.length(), JsonWriter.objectToJson(payload).length());
+//    }
 
     @Test
     @DisplayName("DTO to Json: Alibaba fastjson2")

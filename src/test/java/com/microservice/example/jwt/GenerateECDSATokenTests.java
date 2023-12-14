@@ -14,6 +14,7 @@ import com.nimbusds.jwt.SignedJWT;
 import io.fusionauth.jwt.ec.ECSigner;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.SecureDigestAlgorithm;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import javax.crypto.SecretKey;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -115,11 +117,11 @@ class GenerateECDSATokenTests {
     @Test
     void jsonWebToken() {
         String token = Jwts.builder()
-                .setId(JWT_ID)
-                .setIssuer(ISSUER)
-                .setSubject(SUBJECT)
-                .setExpiration(expiresAt)
-                .signWith(privateKey, SignatureAlgorithm.ES256)
+                .id(JWT_ID)
+                .issuer(ISSUER)
+                .subject(SUBJECT)
+                .expiration(expiresAt)
+                .signWith(privateKey)
                 .compact();
 
         assertNotNull(token);
