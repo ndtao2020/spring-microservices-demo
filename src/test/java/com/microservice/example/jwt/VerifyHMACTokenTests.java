@@ -83,8 +83,8 @@ class VerifyHMACTokenTests {
 
     @Test
     void jsonWebToken() {
-        JwtParser jwtParser = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretBytes))
+        JwtParser jwtParser = Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(secretBytes))
                 .requireId(JWT_ID)
                 .requireIssuer(ISSUER)
                 .requireSubject(SUBJECT)

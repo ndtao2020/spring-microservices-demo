@@ -66,7 +66,7 @@ class Base64UrlDecodeTests {
 
     @Test
     void jsonWebToken() {
-        Decoder<String, byte[]> base64UrlDecoder = Decoders.BASE64URL;
+        Decoder<CharSequence, byte[]> base64UrlDecoder = Decoders.BASE64URL;
         byte[] bytes = base64UrlDecoder.decode(BASE64_VALUE);
         assertArrayEquals(BASE64_DECODE_BYTES, bytes);
     }
