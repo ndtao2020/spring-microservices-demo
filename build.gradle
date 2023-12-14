@@ -26,7 +26,6 @@ repositories {
 ext {
     set('jmhVersion', "1.37")
     set('minioVersion', "8.5.7")
-    set('jsonwebtokenVersion', "0.12.3")
     set('firebaseAdminVersion', "9.2.0")
     set('lombokVersion', "1.18.30")
     set('springdocVersion', "1.7.0")
@@ -137,9 +136,9 @@ dependencies {
     implementation "org.bitbucket.b_c:jose4j:0.9.3"
     implementation "com.nimbusds:nimbus-jose-jwt:9.31"
     implementation 'io.fusionauth:fusionauth-jwt:5.2.4'
-    implementation "io.jsonwebtoken:jjwt-api:${jsonwebtokenVersion}"
-    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
-    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
+    implementation "io.jsonwebtoken:jjwt-api:0.12.3"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:0.12.3"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:0.12.3"
     implementation 'io.vertx:vertx-auth-jwt:4.4.4'
     implementation 'org.jboss.resteasy:jose-jwt:6.2.4.Final'
     // libraries of hashing password
