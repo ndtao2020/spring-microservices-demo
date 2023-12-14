@@ -73,8 +73,8 @@ public class VerifyTokenES256 {
 
     @Benchmark
     public Jwt jsonWebToken() {
-        return Jwts.parserBuilder()
-                .setSigningKey(publicKey)
+        return Jwts.parser()
+                .verifyWith(publicKey)
                 .requireId(JWT_ID)
                 .requireIssuer(ISSUER)
                 .requireSubject(SUBJECT)

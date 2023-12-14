@@ -95,11 +95,11 @@ public class GenerateTokenES256 {
     @Benchmark
     public String jsonWebToken() {
         return Jwts.builder()
-                .setId(JWT_ID)
-                .setIssuer(ISSUER)
-                .setSubject(SUBJECT)
-                .setExpiration(expiresAt)
-                .signWith(privateKey, SignatureAlgorithm.ES256)
+                .id(JWT_ID)
+                .issuer(ISSUER)
+                .subject(SUBJECT)
+                .expiration(expiresAt)
+                .signWith(privateKey)
                 .compact();
     }
 

@@ -79,7 +79,7 @@ class DeserializeJsonToDTOTests {
     @Test
     @DisplayName("Deserialize Json To DTO: Cedar Software json-io")
     void cedarJsonIO() {
-        JsonObject<String, Object> jsonObject = (JsonObject) JsonReader.jsonToJava(jsonValue);
+        JsonObject jsonObject = (JsonObject) JsonReader.jsonToJava(jsonValue);
 
         Payload dto = new Payload();
 

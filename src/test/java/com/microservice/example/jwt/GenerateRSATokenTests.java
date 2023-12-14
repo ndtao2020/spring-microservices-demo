@@ -148,11 +148,11 @@ class GenerateRSATokenTests {
     @Test
     void jsonWebToken() {
         String token = Jwts.builder()
-                .setId(JWT_ID)
-                .setIssuer(ISSUER)
-                .setSubject(SUBJECT)
-                .setExpiration(expiresAt)
-                .signWith(privateKey, SignatureAlgorithm.RS256)
+                .id(JWT_ID)
+                .issuer(ISSUER)
+                .subject(SUBJECT)
+                .expiration(expiresAt)
+                .signWith(privateKey)
                 .compact();
 
         assertNotNull(token);

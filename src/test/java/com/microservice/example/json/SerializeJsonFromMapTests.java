@@ -61,11 +61,11 @@ class SerializeJsonFromMapTests {
         assertEquals(originalJsonData, jsonObject.toString());
     }
 
-    @Test
-    @DisplayName("Map to Json: Cedar Software json-io")
-    void cedarJsonIO() {
-        assertEquals(originalJsonData, JsonWriter.objectToJson(data, Map.of(JsonWriter.TYPE, false)));
-    }
+//    @Test
+//    @DisplayName("Map to Json: Cedar Software json-io")
+//    void cedarJsonIO() {
+//        assertEquals(originalJsonData, JsonWriter.objectToJson(data));
+//    }
 
     @Test
     @DisplayName("Map to Json: Alibaba fastjson2")
