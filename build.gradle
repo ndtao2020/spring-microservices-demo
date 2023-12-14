@@ -129,7 +129,7 @@ dependencies {
     implementation 'net.minidev:json-smart:2.5.0'
     implementation 'org.apache.groovy:groovy-json:4.0.13'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
-    implementation "org.json:json:20230618"
+    implementation "org.json:json:20231013"
     runtimeOnly 'com.squareup.moshi:moshi:1.15.0'
     // libraries of jwt
     // https://mvnrepository.com/open-source/json-web-tokens-libraries
