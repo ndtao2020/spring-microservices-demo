@@ -1,0 +1,38 @@
+name: Auto merge Pull Requests
+
+# https://www.nickyt.co/blog/automate-and-merge-pull-requests-using-github-actions-and-the-github-cli-4lo6/
+on:
+  pull_request:
+    branches: [ "dev" ]
+    types:
+      - labeled
+      - unlabeled
+      - synchronize
+      - opened
+      - edited
+      - ready_for_review
+      - reopened
+      - unlocked
+#  pull_request_review:
+#    types:
+#      - submitted
+  check_suite:
+    types:
+      - completed
+  status: { }
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    steps:
+      - id: automerge
+        name: automerge
+        uses: pascalgn/automerge-action@v0.15.6
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          LOG: "TRACE"  # or "DEBUG"
+
+      - name: feedback
+        if: steps.automerge.outputs.mergeResult == "merged"
+        run: |
+          echo "Pull request ${{ steps.automerge.outputs.pullRequestNumber }} merged!"
