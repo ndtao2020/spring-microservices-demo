@@ -154,7 +154,7 @@ dependencies {
     implementation 'de.svenkubiak:jBCrypt:0.4.3'
     implementation 'com.password4j:password4j:1.7.3'
     implementation 'org.springframework.security:spring-security-crypto:6.2.0'
-    implementation 'io.quarkus:quarkus-elytron-security-common:3.6.3'
+    implementation 'io.quarkus:quarkus-elytron-security-common:3.6.4'
     // HTTP Clients
     // https://mvnrepository.com/open-source/http-clients
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.3'
