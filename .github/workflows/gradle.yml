@@ -45,7 +45,7 @@ jobs:
         run: ./gradlew jmh
       # Packaging workflow data as artifacts
       - run: mkdir jmh && cp build/results/jmh/*.txt jmh
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Package
           path: jmh
