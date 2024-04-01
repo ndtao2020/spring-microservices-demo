@@ -136,7 +136,7 @@ dependencies {
     implementation 'org.apache.groovy:groovy-json:4.0.17'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.2"
-    implementation "org.json:json:20231013"
+    implementation "org.json:json:20240303"
     runtimeOnly 'com.squareup.moshi:moshi:1.15.0'
     // libraries of jwt
     // https://mvnrepository.com/open-source/json-web-tokens-libraries
