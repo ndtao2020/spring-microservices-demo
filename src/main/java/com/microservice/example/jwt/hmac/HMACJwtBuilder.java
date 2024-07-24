@@ -17,40 +17,40 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HMACJwtBuilder {
 
-    public static final char DELIMITER = '.';
-    private final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
-    private final SecretKey secretKey;
-    private final Algorithm algorithm;
-    private final byte[] headerBytes;
-    private final String headerStr;
+  public static final char DELIMITER = '.';
+  private final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
+  private final SecretKey secretKey;
+  private final Algorithm algorithm;
+  private final byte[] headerBytes;
+  private final String headerStr;
 
-    public HMACJwtBuilder(String secretKey, Algorithm algorithm) {
-        this(secretKey.getBytes(UTF_8), algorithm);
-    }
+  public HMACJwtBuilder(String secretKey, Algorithm algorithm) {
+    this(secretKey.getBytes(UTF_8), algorithm);
+  }
 
-    public HMACJwtBuilder(byte[] secretKeyBytes, Algorithm algorithm) {
-        this.secretKey = new SecretKeySpec(secretKeyBytes, algorithm.getJcaName());
-        this.algorithm = algorithm;
-        Map<String, String> map = Map.of(Headers.TYPE, "JWT", Headers.ALGORITHM, algorithm.getValue());
-        this.headerBytes = encoder.encode(JSON.toJSONBytes(map));
-        this.headerStr = new String(headerBytes, UTF_8) + DELIMITER;
-    }
+  public HMACJwtBuilder(byte[] secretKeyBytes, Algorithm algorithm) {
+    this.secretKey = new SecretKeySpec(secretKeyBytes, algorithm.getJcaName());
+    this.algorithm = algorithm;
+    Map<String, String> map = Map.of(Headers.TYPE, "JWT", Headers.ALGORITHM, algorithm.getValue());
+    this.headerBytes = encoder.encode(JSON.toJSONBytes(map));
+    this.headerStr = new String(headerBytes, UTF_8) + DELIMITER;
+  }
 
-    public String compact(Payload payload) throws NoSuchAlgorithmException, InvalidKeyException {
-        final Mac m = Mac.getInstance(algorithm.getJcaName());
-        m.init(secretKey);
-        m.update(headerBytes);
-        m.update((byte) 46);
-        byte[] bytes = encoder.encode(JSON.toJSONBytes(payload));
-        return headerStr + new String(bytes, UTF_8) + DELIMITER + new String(encoder.encode(m.doFinal(bytes)), UTF_8);
-    }
+  public String compact(Payload payload) throws NoSuchAlgorithmException, InvalidKeyException {
+    final Mac m = Mac.getInstance(algorithm.getJcaName());
+    m.init(secretKey);
+    m.update(headerBytes);
+    m.update((byte) 46);
+    byte[] bytes = encoder.encode(JSON.toJSONBytes(payload));
+    return headerStr + new String(bytes, UTF_8) + DELIMITER + new String(encoder.encode(m.doFinal(bytes)), UTF_8);
+  }
 
-    public String compact(Map<String, ?> payloadMap) throws NoSuchAlgorithmException, InvalidKeyException {
-        final Mac m = Mac.getInstance(algorithm.getJcaName());
-        m.init(secretKey);
-        m.update(headerBytes);
-        m.update((byte) 46);
-        byte[] bytes = encoder.encode(JSON.toJSONBytes(payloadMap));
-        return headerStr + new String(bytes, UTF_8) + DELIMITER + new String(encoder.encode(m.doFinal(bytes)), UTF_8);
-    }
+  public String compact(Map<String, ?> payloadMap) throws NoSuchAlgorithmException, InvalidKeyException {
+    final Mac m = Mac.getInstance(algorithm.getJcaName());
+    m.init(secretKey);
+    m.update(headerBytes);
+    m.update((byte) 46);
+    byte[] bytes = encoder.encode(JSON.toJSONBytes(payloadMap));
+    return headerStr + new String(bytes, UTF_8) + DELIMITER + new String(encoder.encode(m.doFinal(bytes)), UTF_8);
+  }
 }

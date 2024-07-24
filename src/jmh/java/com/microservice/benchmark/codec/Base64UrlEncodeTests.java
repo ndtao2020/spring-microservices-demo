@@ -15,61 +15,61 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class Base64UrlEncodeTests {
 
-    private static final String VALUE = RandomUtils.generateId(100);
-    private static final byte[] VALUE_BYTES = VALUE.getBytes(StandardCharsets.UTF_8);
+  private static final String VALUE = RandomUtils.generateId(100);
+  private static final byte[] VALUE_BYTES = VALUE.getBytes(StandardCharsets.UTF_8);
 
-    @Benchmark
-    public byte[] javaToByte() {
-        return Base64.getUrlEncoder().withoutPadding().encode(VALUE_BYTES);
-    }
+  @Benchmark
+  public byte[] javaToByte() {
+    return Base64.getUrlEncoder().withoutPadding().encode(VALUE_BYTES);
+  }
 
-    @Benchmark
-    public String java() {
-        return new String(Base64.getUrlEncoder().withoutPadding().encode(VALUE_BYTES), StandardCharsets.UTF_8);
-    }
+  @Benchmark
+  public String java() {
+    return new String(Base64.getUrlEncoder().withoutPadding().encode(VALUE_BYTES), StandardCharsets.UTF_8);
+  }
 
-    @Benchmark
-    public String jboss() {
-        return org.jboss.resteasy.jose.jws.util.Base64Url.encode(VALUE_BYTES);
-    }
+  @Benchmark
+  public String jboss() {
+    return org.jboss.resteasy.jose.jws.util.Base64Url.encode(VALUE_BYTES);
+  }
 
-    @Benchmark
-    public String nimbusdsJose() {
-        return com.nimbusds.jose.util.Base64URL.encode(VALUE_BYTES).toString();
-    }
+  @Benchmark
+  public String nimbusdsJose() {
+    return com.nimbusds.jose.util.Base64URL.encode(VALUE_BYTES).toString();
+  }
 
-    @Benchmark
-    public byte[] jose4jInternalCommonsCodecToByte() {
-        return org.jose4j.base64url.internal.apache.commons.codec.binary.Base64.encodeBase64URLSafe(VALUE_BYTES);
-    }
+  @Benchmark
+  public byte[] jose4jInternalCommonsCodecToByte() {
+    return org.jose4j.base64url.internal.apache.commons.codec.binary.Base64.encodeBase64URLSafe(VALUE_BYTES);
+  }
 
-    @Benchmark
-    public String jose4jInternalCommonsCodec() {
-        return org.jose4j.base64url.internal.apache.commons.codec.binary.Base64.encodeBase64URLSafeString(VALUE_BYTES);
-    }
+  @Benchmark
+  public String jose4jInternalCommonsCodec() {
+    return org.jose4j.base64url.internal.apache.commons.codec.binary.Base64.encodeBase64URLSafeString(VALUE_BYTES);
+  }
 
-    @Benchmark
-    public byte[] apacheCommonsCodecToByte() {
-        return org.apache.commons.codec.binary.Base64.encodeBase64URLSafe(VALUE_BYTES);
-    }
+  @Benchmark
+  public byte[] apacheCommonsCodecToByte() {
+    return org.apache.commons.codec.binary.Base64.encodeBase64URLSafe(VALUE_BYTES);
+  }
 
-    @Benchmark
-    public String apacheCommonsCodec() {
-        return org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString(VALUE_BYTES);
-    }
+  @Benchmark
+  public String apacheCommonsCodec() {
+    return org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString(VALUE_BYTES);
+  }
 
-    @Benchmark
-    public String jackson() {
-        return Base64Variants.MODIFIED_FOR_URL.encode(VALUE_BYTES);
-    }
+  @Benchmark
+  public String jackson() {
+    return Base64Variants.MODIFIED_FOR_URL.encode(VALUE_BYTES);
+  }
 
-    @Benchmark
-    public String guavaGoogle() {
-        return BaseEncoding.base64Url().omitPadding().encode(VALUE_BYTES);
-    }
+  @Benchmark
+  public String guavaGoogle() {
+    return BaseEncoding.base64Url().omitPadding().encode(VALUE_BYTES);
+  }
 
-    @Benchmark
-    public String jsonWebToken() {
-        return Encoders.BASE64URL.encode(VALUE_BYTES);
-    }
+  @Benchmark
+  public String jsonWebToken() {
+    return Encoders.BASE64URL.encode(VALUE_BYTES);
+  }
 }
