@@ -8,25 +8,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RandomTests {
 
-    @Test
-    @DisplayName("Test Generate Random Id")
-    void testGenerateId() {
+  @Test
+  @DisplayName("Test Generate Random Id")
+  void testGenerateId() {
 
-        int length = 100;
+    int length = 100;
 
-        String password = RandomUtils.generateId(length);
+    String password = RandomUtils.generateId(length);
 
-        assertEquals(length, password.length());
-    }
+    assertEquals(length, password.length());
+  }
 
-    @Test
-    @DisplayName("Test Generate Random Password")
-    void testGeneratePassword() {
+  @Test
+  @DisplayName("Test Generate Random Password")
+  void testGeneratePassword() {
 
-        int length = 100;
+    int length = 100;
 
-        String password = RandomUtils.generatePassword(length);
+    String password = RandomUtils.generatePassword(length);
 
-        assertEquals(length, password.length());
-    }
+    assertEquals(length, password.length());
+  }
 }

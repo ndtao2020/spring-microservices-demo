@@ -36,112 +36,112 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Generate a Token with RSA - Test case")
 class VerifyRSATokenTests {
 
-    private static final String JWT_ID = RandomUtils.generateId(20);
-    private static final String ISSUER = "https://taoqn.pages.dev";
-    private static final String SUBJECT = "ndtao2020";
+  private static final String JWT_ID = RandomUtils.generateId(20);
+  private static final String ISSUER = "https://taoqn.pages.dev";
+  private static final String SUBJECT = "ndtao2020";
 
-    static RSAPublicKey publicKey;
-    static RSAPrivateKey privateKey;
-    private final String generatedToken = JWT.create()
-            .withJWTId(JWT_ID)
-            .withIssuer(ISSUER)
-            .withSubject(SUBJECT)
-            .withExpiresAt(new Date(System.currentTimeMillis() + (60 * 60 * 1000)))
-            .sign(Algorithm.RSA256(privateKey));
+  static RSAPublicKey publicKey;
+  static RSAPrivateKey privateKey;
+  private final String generatedToken = JWT.create()
+      .withJWTId(JWT_ID)
+      .withIssuer(ISSUER)
+      .withSubject(SUBJECT)
+      .withExpiresAt(new Date(System.currentTimeMillis() + (60 * 60 * 1000)))
+      .sign(Algorithm.RSA256(privateKey));
 
-    @BeforeAll
-    static void initAll() throws NoSuchAlgorithmException {
-        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-        generator.initialize(2048, new SecureRandom());
-        KeyPair keyPair = generator.generateKeyPair();
-        // assign variables
-        publicKey = (RSAPublicKey) keyPair.getPublic();
-        privateKey = (RSAPrivateKey) keyPair.getPrivate();
-    }
+  @BeforeAll
+  static void initAll() throws NoSuchAlgorithmException {
+    KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+    generator.initialize(2048, new SecureRandom());
+    KeyPair keyPair = generator.generateKeyPair();
+    // assign variables
+    publicKey = (RSAPublicKey) keyPair.getPublic();
+    privateKey = (RSAPrivateKey) keyPair.getPrivate();
+  }
 
-    @Test
-    void customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        RSAJwtParser jwtParser = new RSAJwtParser(publicKey, com.microservice.example.jwt.Algorithm.RS256);
-        Payload payload = jwtParser.verify(generatedToken);
-        // Assert the subject of the JWT is as expected
-        assertNotNull(payload);
-        assertEquals(JWT_ID, payload.getJti());
-        assertEquals(ISSUER, payload.getIss());
-        assertEquals(SUBJECT, payload.getSub());
-    }
+  @Test
+  void customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    RSAJwtParser jwtParser = new RSAJwtParser(publicKey, com.microservice.example.jwt.Algorithm.RS256);
+    Payload payload = jwtParser.verify(generatedToken);
+    // Assert the subject of the JWT is as expected
+    assertNotNull(payload);
+    assertEquals(JWT_ID, payload.getJti());
+    assertEquals(ISSUER, payload.getIss());
+    assertEquals(SUBJECT, payload.getSub());
+  }
 
-    @Test
-    void customJWTIndexOf() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        RSAJwtParser jwtParser = new RSAJwtParser(publicKey, com.microservice.example.jwt.Algorithm.RS256);
-        Payload payload = jwtParser.verifyIndexOf(generatedToken);
-        // Assert the subject of the JWT is as expected
-        assertNotNull(payload);
-        assertEquals(JWT_ID, payload.getJti());
-        assertEquals(ISSUER, payload.getIss());
-        assertEquals(SUBJECT, payload.getSub());
-    }
+  @Test
+  void customJWTIndexOf() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    RSAJwtParser jwtParser = new RSAJwtParser(publicKey, com.microservice.example.jwt.Algorithm.RS256);
+    Payload payload = jwtParser.verifyIndexOf(generatedToken);
+    // Assert the subject of the JWT is as expected
+    assertNotNull(payload);
+    assertEquals(JWT_ID, payload.getJti());
+    assertEquals(ISSUER, payload.getIss());
+    assertEquals(SUBJECT, payload.getSub());
+  }
 
-    @Test
-    void auth0JWT() {
-        JWTVerifier verifier = JWT.require(Algorithm.RSA256(publicKey))
-                .withJWTId(JWT_ID)
-                .withIssuer(ISSUER)
-                .withSubject(SUBJECT)
-                .build();
-        assertNotNull(verifier.verify(generatedToken));
-    }
+  @Test
+  void auth0JWT() {
+    JWTVerifier verifier = JWT.require(Algorithm.RSA256(publicKey))
+        .withJWTId(JWT_ID)
+        .withIssuer(ISSUER)
+        .withSubject(SUBJECT)
+        .build();
+    assertNotNull(verifier.verify(generatedToken));
+  }
 
-    @Test
-    void jsonWebToken() {
-        JwtParser jwtParser = Jwts.parser()
-                .verifyWith(publicKey)
-                .requireId(JWT_ID)
-                .requireIssuer(ISSUER)
-                .requireSubject(SUBJECT)
-                .build();
-        assertNotNull(jwtParser.parse(generatedToken));
-    }
+  @Test
+  void jsonWebToken() {
+    JwtParser jwtParser = Jwts.parser()
+        .verifyWith(publicKey)
+        .requireId(JWT_ID)
+        .requireIssuer(ISSUER)
+        .requireSubject(SUBJECT)
+        .build();
+    assertNotNull(jwtParser.parse(generatedToken));
+  }
 
-    @Test
-    void nimbusJoseJWT() throws JOSEException, ParseException {
-        SignedJWT signedJWT = SignedJWT.parse(generatedToken);
-        assertTrue(signedJWT.verify(new RSASSAVerifier(publicKey)));
-        JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
-        assertEquals(JWT_ID, jwtClaimsSet.getJWTID());
-        assertEquals(ISSUER, jwtClaimsSet.getIssuer());
-        assertEquals(SUBJECT, jwtClaimsSet.getSubject());
-    }
+  @Test
+  void nimbusJoseJWT() throws JOSEException, ParseException {
+    SignedJWT signedJWT = SignedJWT.parse(generatedToken);
+    assertTrue(signedJWT.verify(new RSASSAVerifier(publicKey)));
+    JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
+    assertEquals(JWT_ID, jwtClaimsSet.getJWTID());
+    assertEquals(ISSUER, jwtClaimsSet.getIssuer());
+    assertEquals(SUBJECT, jwtClaimsSet.getSubject());
+  }
 
-    @Test
-    void fusionAuth() {
-        // Verify and decode the encoded string JWT to a rich object
-        io.fusionauth.jwt.domain.JWT jwt = io.fusionauth.jwt.domain.JWT.getDecoder().decode(generatedToken, RSAVerifier.newVerifier(publicKey));
-        // Assert the subject of the JWT is as expected
-        assertEquals(JWT_ID, jwt.uniqueId);
-        assertEquals(ISSUER, jwt.issuer);
-        assertEquals(SUBJECT, jwt.subject);
-    }
+  @Test
+  void fusionAuth() {
+    // Verify and decode the encoded string JWT to a rich object
+    io.fusionauth.jwt.domain.JWT jwt = io.fusionauth.jwt.domain.JWT.getDecoder().decode(generatedToken, RSAVerifier.newVerifier(publicKey));
+    // Assert the subject of the JWT is as expected
+    assertEquals(JWT_ID, jwt.uniqueId);
+    assertEquals(ISSUER, jwt.issuer);
+    assertEquals(SUBJECT, jwt.subject);
+  }
 
-    @Test
-    void bitbucketBC() throws InvalidJwtException, MalformedClaimException {
-        JwtConsumer jwtConsumer = new JwtConsumerBuilder()
-                .setRequireExpirationTime() // the JWT must have an expiration time
-                .setRequireSubject() // the JWT must have a subject claim
-                .setExpectedIssuer(ISSUER) // whom the JWT needs to have been issued by
-                .setExpectedSubject(SUBJECT)
-                .setVerificationKey(publicKey)
-                .build();
-        JwtClaims jwtClaims = jwtConsumer.processToClaims(generatedToken);
-        // Assert the subject of the JWT is as expected
-        assertNotNull(jwtClaims);
-        assertEquals(JWT_ID, jwtClaims.getJwtId());
-    }
+  @Test
+  void bitbucketBC() throws InvalidJwtException, MalformedClaimException {
+    JwtConsumer jwtConsumer = new JwtConsumerBuilder()
+        .setRequireExpirationTime() // the JWT must have an expiration time
+        .setRequireSubject() // the JWT must have a subject claim
+        .setExpectedIssuer(ISSUER) // whom the JWT needs to have been issued by
+        .setExpectedSubject(SUBJECT)
+        .setVerificationKey(publicKey)
+        .build();
+    JwtClaims jwtClaims = jwtConsumer.processToClaims(generatedToken);
+    // Assert the subject of the JWT is as expected
+    assertNotNull(jwtClaims);
+    assertEquals(JWT_ID, jwtClaims.getJwtId());
+  }
 
-    @Test
-    void jbossJoseJwt() throws JWSInputException {
-        JWSInput input = new JWSInput(generatedToken, ResteasyProviderFactory.getInstance());
-        assertTrue(RSAProvider.verify(input, publicKey));
-        Payload dto = input.readJsonContent(Payload.class);
-        assertNotNull(dto);
-    }
+  @Test
+  void jbossJoseJwt() throws JWSInputException {
+    JWSInput input = new JWSInput(generatedToken, ResteasyProviderFactory.getInstance());
+    assertTrue(RSAProvider.verify(input, publicKey));
+    Payload dto = input.readJsonContent(Payload.class);
+    assertNotNull(dto);
+  }
 }

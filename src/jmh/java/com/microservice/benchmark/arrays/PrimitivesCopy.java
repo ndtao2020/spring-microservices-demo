@@ -13,29 +13,29 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class PrimitivesCopy {
 
-    @Param({"10", "1000000"})
-    public int size;
+  @Param({"10", "1000000"})
+  public int size;
 
-    int[] src;
+  int[] src;
 
-    @Setup
-    public void setup() throws NoSuchAlgorithmException {
-        Random r = SecureRandom.getInstanceStrong();
-        src = new int[size];
-        for (int i = 0; i < size; i++) {
-            src[i] = r.nextInt();
-        }
+  @Setup
+  public void setup() throws NoSuchAlgorithmException {
+    Random r = SecureRandom.getInstanceStrong();
+    src = new int[size];
+    for (int i = 0; i < size; i++) {
+      src[i] = r.nextInt();
     }
+  }
 
-    @Benchmark
-    public int[] systemArrayCopyBenchmark() {
-        int[] target = new int[size];
-        System.arraycopy(src, 0, target, 0, size);
-        return target;
-    }
+  @Benchmark
+  public int[] systemArrayCopyBenchmark() {
+    int[] target = new int[size];
+    System.arraycopy(src, 0, target, 0, size);
+    return target;
+  }
 
-    @Benchmark
-    public int[] arraysCopyOfBenchmark() {
-        return Arrays.copyOf(src, size);
-    }
+  @Benchmark
+  public int[] arraysCopyOfBenchmark() {
+    return Arrays.copyOf(src, size);
+  }
 }

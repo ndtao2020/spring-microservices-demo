@@ -17,22 +17,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("Test AesAlgorithm")
 class AesAlgorithmTests {
 
-    @Test
-    void testAesAlgorithm() throws InvalidAlgorithmParameterException, IllegalBlockSizeException, NoSuchPaddingException, NoSuchAlgorithmException,
-            BadPaddingException, InvalidKeySpecException, InvalidKeyException {
+  @Test
+  void testAesAlgorithm() throws InvalidAlgorithmParameterException, IllegalBlockSizeException, NoSuchPaddingException, NoSuchAlgorithmException,
+      BadPaddingException, InvalidKeySpecException, InvalidKeyException {
 
-        String saltKey = RandomUtils.generatePassword(50);
-        String text = RandomUtils.generatePassword(50);
+    String saltKey = RandomUtils.generatePassword(50);
+    String text = RandomUtils.generatePassword(50);
 
-        System.out.println("saltKey: " + saltKey);
-        System.out.println("text: " + text);
+    System.out.println("saltKey: " + saltKey);
+    System.out.println("text: " + text);
 
-        String encryptString = AesAlgorithm.encrypt(text, saltKey);
-        String decryptString = AesAlgorithm.decrypt(encryptString, saltKey);
+    String encryptString = AesAlgorithm.encrypt(text, saltKey);
+    String decryptString = AesAlgorithm.decrypt(encryptString, saltKey);
 
-        System.out.println("encryptString: " + encryptString);
-        System.out.println("decryptString: " + decryptString);
+    System.out.println("encryptString: " + encryptString);
+    System.out.println("decryptString: " + decryptString);
 
-        assertEquals(decryptString, text);
-    }
+    assertEquals(decryptString, text);
+  }
 }

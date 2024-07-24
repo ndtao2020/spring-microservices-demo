@@ -46,116 +46,116 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Generate a Token with HMAC - Test case")
 class VerifyHMACTokenTests {
 
-    private static final String JWT_ID = RandomUtils.generateId(20);
-    private static final String ISSUER = "https://taoqn.pages.dev";
-    private static final String SUBJECT = "ndtao2020";
+  private static final String JWT_ID = RandomUtils.generateId(20);
+  private static final String ISSUER = "https://taoqn.pages.dev";
+  private static final String SUBJECT = "ndtao2020";
 
-    private final String secret = RandomUtils.generatePassword(50);
-    private final byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
-    private final String generatedToken = JWT.create()
-            .withJWTId(JWT_ID)
-            .withIssuer(ISSUER)
-            .withSubject(SUBJECT)
-            .withExpiresAt(new Date(System.currentTimeMillis() + (60 * 60 * 1000)))
-            .sign(Algorithm.HMAC256(secretBytes));
+  private final String secret = RandomUtils.generatePassword(50);
+  private final byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
+  private final String generatedToken = JWT.create()
+      .withJWTId(JWT_ID)
+      .withIssuer(ISSUER)
+      .withSubject(SUBJECT)
+      .withExpiresAt(new Date(System.currentTimeMillis() + (60 * 60 * 1000)))
+      .sign(Algorithm.HMAC256(secretBytes));
 
-    @Test
-    void customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        HMACJwtParser jwtParser = new HMACJwtParser(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
-        Payload payload = jwtParser.verify(generatedToken);
-        // Assert the subject of the JWT is as expected
-        assertNotNull(payload);
-        assertEquals(JWT_ID, payload.getJti());
-        assertEquals(ISSUER, payload.getIss());
-        assertEquals(SUBJECT, payload.getSub());
-    }
+  @Test
+  void customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    HMACJwtParser jwtParser = new HMACJwtParser(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
+    Payload payload = jwtParser.verify(generatedToken);
+    // Assert the subject of the JWT is as expected
+    assertNotNull(payload);
+    assertEquals(JWT_ID, payload.getJti());
+    assertEquals(ISSUER, payload.getIss());
+    assertEquals(SUBJECT, payload.getSub());
+  }
 
-    @Test
-    void auth0JWT() {
-        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secretBytes))
-                .withJWTId(JWT_ID)
-                .withIssuer(ISSUER)
-                .withSubject(SUBJECT)
-                .build();
+  @Test
+  void auth0JWT() {
+    JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secretBytes))
+        .withJWTId(JWT_ID)
+        .withIssuer(ISSUER)
+        .withSubject(SUBJECT)
+        .build();
 
-        assertNotNull(verifier.verify(generatedToken));
-    }
+    assertNotNull(verifier.verify(generatedToken));
+  }
 
-    @Test
-    void jsonWebToken() {
-        JwtParser jwtParser = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secretBytes))
-                .requireId(JWT_ID)
-                .requireIssuer(ISSUER)
-                .requireSubject(SUBJECT)
-                .build();
-        assertNotNull(jwtParser.parse(generatedToken));
-    }
+  @Test
+  void jsonWebToken() {
+    JwtParser jwtParser = Jwts.parser()
+        .verifyWith(Keys.hmacShaKeyFor(secretBytes))
+        .requireId(JWT_ID)
+        .requireIssuer(ISSUER)
+        .requireSubject(SUBJECT)
+        .build();
+    assertNotNull(jwtParser.parse(generatedToken));
+  }
 
-    @Test
-    void nimbusJoseJWT() throws JOSEException, ParseException {
-        SignedJWT signedJWT = SignedJWT.parse(generatedToken);
-        JWSVerifier verifier = new MACVerifier(secretBytes);
-        assertTrue(signedJWT.verify(verifier));
+  @Test
+  void nimbusJoseJWT() throws JOSEException, ParseException {
+    SignedJWT signedJWT = SignedJWT.parse(generatedToken);
+    JWSVerifier verifier = new MACVerifier(secretBytes);
+    assertTrue(signedJWT.verify(verifier));
 
-        JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
+    JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
 
-        assertEquals(JWT_ID, jwtClaimsSet.getJWTID());
-        assertEquals(ISSUER, jwtClaimsSet.getIssuer());
-        assertEquals(SUBJECT, jwtClaimsSet.getSubject());
-    }
+    assertEquals(JWT_ID, jwtClaimsSet.getJWTID());
+    assertEquals(ISSUER, jwtClaimsSet.getIssuer());
+    assertEquals(SUBJECT, jwtClaimsSet.getSubject());
+  }
 
-    @Test
-    void fusionAuth() {
-        // Verify and decode the encoded string JWT to a rich object
-        io.fusionauth.jwt.domain.JWT jwt = io.fusionauth.jwt.domain.JWT.getDecoder().decode(generatedToken, HMACVerifier.newVerifier(secretBytes));
-        // Assert the subject of the JWT is as expected
-        assertEquals(JWT_ID, jwt.uniqueId);
-        assertEquals(ISSUER, jwt.issuer);
-        assertEquals(SUBJECT, jwt.subject);
-    }
+  @Test
+  void fusionAuth() {
+    // Verify and decode the encoded string JWT to a rich object
+    io.fusionauth.jwt.domain.JWT jwt = io.fusionauth.jwt.domain.JWT.getDecoder().decode(generatedToken, HMACVerifier.newVerifier(secretBytes));
+    // Assert the subject of the JWT is as expected
+    assertEquals(JWT_ID, jwt.uniqueId);
+    assertEquals(ISSUER, jwt.issuer);
+    assertEquals(SUBJECT, jwt.subject);
+  }
 
-    @Test
-    void bitbucketBC() throws InvalidJwtException, MalformedClaimException {
-        JwtConsumer jwtConsumer = new JwtConsumerBuilder()
-                .setRequireExpirationTime() // the JWT must have an expiration time
-                .setRequireSubject() // the JWT must have a subject claim
-                .setExpectedIssuer(ISSUER) // whom the JWT needs to have been issued by
-                .setExpectedSubject(SUBJECT)
-                .setVerificationKey(new HmacKey(secretBytes))
-                .build();
+  @Test
+  void bitbucketBC() throws InvalidJwtException, MalformedClaimException {
+    JwtConsumer jwtConsumer = new JwtConsumerBuilder()
+        .setRequireExpirationTime() // the JWT must have an expiration time
+        .setRequireSubject() // the JWT must have a subject claim
+        .setExpectedIssuer(ISSUER) // whom the JWT needs to have been issued by
+        .setExpectedSubject(SUBJECT)
+        .setVerificationKey(new HmacKey(secretBytes))
+        .build();
 
-        JwtClaims jwtClaims = jwtConsumer.processToClaims(generatedToken);
-        // Assert the subject of the JWT is as expected
-        assertNotNull(jwtClaims);
-        assertEquals(JWT_ID, jwtClaims.getJwtId());
-    }
+    JwtClaims jwtClaims = jwtConsumer.processToClaims(generatedToken);
+    // Assert the subject of the JWT is as expected
+    assertNotNull(jwtClaims);
+    assertEquals(JWT_ID, jwtClaims.getJwtId());
+  }
 
-    @Test
-    void vertxAuthJwt() {
-        JWTAuthOptions config = new JWTAuthOptions()
-                .addPubSecKey(new PubSecKeyOptions().setAlgorithm("HS256").setBuffer(secret));
+  @Test
+  void vertxAuthJwt() {
+    JWTAuthOptions config = new JWTAuthOptions()
+        .addPubSecKey(new PubSecKeyOptions().setAlgorithm("HS256").setBuffer(secret));
 
-        JWTAuth provider = JWTAuth.create(Vertx.vertx(), config);
+    JWTAuth provider = JWTAuth.create(Vertx.vertx(), config);
 
-        provider.authenticate(new TokenCredentials(generatedToken), result -> {
-            assert result.succeeded();
-            User user = result.result();
-            JsonObject jsonObject = user.principal();
-            // Assert the subject of the JWT is as expected
-            assertNotNull(user);
-            assertNotNull(jsonObject);
-            assertEquals(JWT_ID, jsonObject.getString(Claims.JWT_ID));
-            assertEquals(ISSUER, jsonObject.getString(Claims.ISSUER));
-            assertEquals(SUBJECT, jsonObject.getString(Claims.SUBJECT));
-        });
-    }
+    provider.authenticate(new TokenCredentials(generatedToken), result -> {
+      assert result.succeeded();
+      User user = result.result();
+      JsonObject jsonObject = user.principal();
+      // Assert the subject of the JWT is as expected
+      assertNotNull(user);
+      assertNotNull(jsonObject);
+      assertEquals(JWT_ID, jsonObject.getString(Claims.JWT_ID));
+      assertEquals(ISSUER, jsonObject.getString(Claims.ISSUER));
+      assertEquals(SUBJECT, jsonObject.getString(Claims.SUBJECT));
+    });
+  }
 
-    @Test
-    void jbossJoseJwt() throws JWSInputException {
-        JWSInput input = new JWSInput(generatedToken, ResteasyProviderFactory.getInstance());
-        assertTrue(HMACProvider.verify(input, secretBytes));
-        Payload dto = input.readJsonContent(Payload.class);
-        assertNotNull(dto);
-    }
+  @Test
+  void jbossJoseJwt() throws JWSInputException {
+    JWSInput input = new JWSInput(generatedToken, ResteasyProviderFactory.getInstance());
+    assertTrue(HMACProvider.verify(input, secretBytes));
+    Payload dto = input.readJsonContent(Payload.class);
+    assertNotNull(dto);
+  }
 }
