@@ -1,16 +1,8 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.guardsquare:proguard-gradle:7.4.1'
-    }
-}
-
 plugins {
     id "java"
     id "application"
     id "me.champeau.jmh" version "0.7.2"
+    id "com.google.protobuf" version "0.9.4"
     id 'org.sonarqube' version '4.4.1.3373' apply true
     id 'org.springframework.boot' version '3.3.2' apply false
     id 'io.spring.dependency-management' version '1.1.4' apply false
@@ -29,8 +21,9 @@ ext {
     set('firebaseAdminVersion', "9.3.0")
     set('lombokVersion', "1.18.34")
     set('springdocVersion', "1.8.0")
+    set('protobufVersion', "4.27.2")
     set('springCloudVersion', "2023.0.3")
-    set('springBootAdminVersion', "3.0.3")
+    set('springBootAdminVersion', "3.3.3")
     set('testcontainersVersion', "1.20.0")
 }
 
@@ -46,6 +39,30 @@ java {
 
 application {
     mainClass = 'com.microservice.example.Application'
+}
+
+sourceSets {
+    jmh {
+        proto {
+            srcDir '.proto'
+        }
+    }
+    main {
+        proto {
+            srcDir '.proto'
+        }
+    }
+    test {
+        proto {
+            srcDir '.proto'
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+    }
 }
 
 subprojects {
@@ -109,16 +126,16 @@ sonarqube {
 dependencies {
     jmh "org.openjdk.jmh:jmh-core:${jmhVersion}"
     jmh "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
+    // this is the line that solved it for me
+    jmhAnnotationProcessor "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
     // lombok
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     // Java Mapping Frameworks
     // https://www.baeldung.com/java-performance-mapping-frameworks
-    implementation 'com.github.dozermapper:dozer-core:7.0.0'
     implementation 'ma.glasnost.orika:orika-core:1.5.4'
     implementation 'org.mapstruct:mapstruct:1.6.0.RC1'
     implementation 'org.modelmapper:modelmapper:3.2.0'
-    implementation 'com.googlecode.jmapper-framework:jmapper-core:1.6.1.CR2'
     // libraries of base64
     // https://mvnrepository.com/open-source/base64-libraries
     implementation 'com.google.guava:guava:33.2.1-jre'
@@ -164,6 +181,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-elytron-security-common:3.12.3'
     // https://mvnrepository.com/artifact/com.google.crypto.tink/tink
     implementation 'com.google.crypto.tink:tink:1.14.0'
+    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
     // HTTP Clients
     // https://mvnrepository.com/open-source/http-clients
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
@@ -186,8 +204,8 @@ dependencies {
 }
 
 jmh {
-    warmupIterations = 2
-    iterations = 5
+    warmupIterations = 1
+    iterations = 3
     fork = 1
 }
 

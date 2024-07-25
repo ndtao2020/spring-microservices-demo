@@ -1,8 +1,6 @@
 package com.microservice.benchmark.json;
 
 import com.alibaba.fastjson2.JSON;
-import com.cedarsoftware.util.io.JsonObject;
-import com.cedarsoftware.util.io.JsonReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.microservice.example.RandomUtils;
@@ -59,21 +57,6 @@ public class DeserializeJsonToDTO {
     dto.setIss(jsonObject.getString(Claims.ISSUER));
     dto.setJti(jsonObject.getString(Claims.JWT_ID));
     dto.setExp(jsonObject.getLong(Claims.EXPIRES_AT));
-    return dto;
-  }
-
-  @Benchmark
-  public Payload cedarJsonIO() {
-    final JsonObject jsonObject = (JsonObject) JsonReader.jsonToJava(jsonValue);
-
-    Payload dto = new Payload();
-
-    dto.setAud(jsonObject.get(Claims.AUDIENCE).toString());
-    dto.setSub(jsonObject.get(Claims.SUBJECT).toString());
-    dto.setIss(jsonObject.get(Claims.ISSUER).toString());
-    dto.setJti(jsonObject.get(Claims.JWT_ID).toString());
-    dto.setExp(Long.parseLong(jsonObject.get(Claims.EXPIRES_AT).toString()));
-
     return dto;
   }
 
