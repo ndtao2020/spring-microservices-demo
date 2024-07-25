@@ -10,8 +10,6 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "main" ]
-#  pull_request:
-#    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -28,7 +26,6 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'temurin'
           cache: 'gradle'
       # Setup gradle
       - name: Validate Gradle wrapper
@@ -38,7 +35,6 @@ jobs:
       # Building and testing code
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-      # Execute Benchmark
       - name: Execute Benchmarks
         run: ./gradlew jmh
       # Packaging workflow data as artifacts

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option optimize_for = CODE_SIZE;
+option java_multiple_files = true;
+option java_generic_services = true;
+option java_package = "com.microservice.protobuf";
+option java_outer_classname = "CommonProtoBuf";
+
+message SuccessResultBuf {
+  bool success = 1;
+}
+
+message RedirectResultBuf {
+  bool success = 1;
+  string redirect = 2;
+}
+
+message ErrorResultBuf {
+  bool success = 1;
+  string message = 2;
+}
