@@ -35,7 +35,6 @@ jobs:
       # Building and testing code
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-      # Execute Benchmarks
       - name: Execute Benchmarks
         run: ./gradlew jmh
       # Packaging workflow data as artifacts
