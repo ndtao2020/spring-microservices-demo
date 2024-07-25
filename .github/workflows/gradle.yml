@@ -26,6 +26,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '21'
+          distribution: 'liberica'
           cache: 'gradle'
       # Setup gradle
       - name: Validate Gradle wrapper
