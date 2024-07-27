@@ -181,7 +181,14 @@ dependencies {
     implementation 'io.quarkus:quarkus-elytron-security-common:3.12.3'
     // https://mvnrepository.com/artifact/com.google.crypto.tink/tink
     implementation 'com.google.crypto.tink:tink:1.14.0'
+    // Object Serialization
+    // https://mvnrepository.com/open-source/object-serialization
+    implementation 'io.activej:activej-serializer:6.0-beta2'
     implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+    implementation 'org.apache.thrift:libthrift:0.20.0'
+    implementation 'com.esotericsoftware:kryo:5.6.0'
+    implementation 'org.msgpack:msgpack-core:0.9.8'
+    implementation 'com.google.flatbuffers:flatbuffers-java:24.3.25'
     // HTTP Clients
     // https://mvnrepository.com/open-source/http-clients
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
