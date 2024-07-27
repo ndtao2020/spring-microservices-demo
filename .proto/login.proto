@@ -3,9 +3,7 @@ syntax = "proto3";
 // https://github.com/googleapis/googleapis/blob/master/google/type/date.proto
 import "date.proto";
 
-option optimize_for = CODE_SIZE;
 option java_multiple_files = true;
-option java_generic_services = true;
 option java_package = "com.microservice.protobuf";
 option java_outer_classname = "LoginBuf";
 
