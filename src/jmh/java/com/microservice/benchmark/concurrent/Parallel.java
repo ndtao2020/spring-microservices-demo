@@ -23,6 +23,7 @@ import java.util.stream.StreamSupport;
 public class Parallel {
 
   private static final long millis = 10;
+  private final int processors = Runtime.getRuntime().availableProcessors();
 
   public static void main(String[] args) throws RunnerException {
     Options opt = new OptionsBuilder()
@@ -46,7 +47,6 @@ public class Parallel {
 
   @Benchmark
   public void executorService() {
-    int processors = Runtime.getRuntime().availableProcessors();
     ExecutorService executorService = Executors.newFixedThreadPool(processors);
     List<CompletableFuture<Void>> futures = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
