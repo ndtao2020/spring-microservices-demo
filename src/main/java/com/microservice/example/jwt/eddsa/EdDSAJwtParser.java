@@ -25,9 +25,10 @@ public class EdDSAJwtParser {
   }
 
   public Payload verify(String t) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, IOException {
-    String[] r = t.split("\\" + EdDSAJwtBuilder.DELIMITER);
-    byte[] n = r[1].getBytes(StandardCharsets.UTF_8);
-    if (!verifySignature(r[0].getBytes(StandardCharsets.UTF_8), n, decoder.decode(r[2]))) {
+    int i1 = t.indexOf(EdDSAJwtBuilder.DELIMITER);
+    int i2 = t.indexOf(EdDSAJwtBuilder.DELIMITER, i1 + 1);
+    byte[] n = t.substring(i1 + 1, i2).getBytes(StandardCharsets.UTF_8);
+    if (!verifySignature(t.substring(0, i1).getBytes(StandardCharsets.UTF_8), n, decoder.decode(t.substring(i2 + 1)))) {
       throw new SignatureException("Token is invalid !");
     }
     Payload payload = JSON.parseObject(decoder.decode(n), Payload.class);
@@ -37,7 +38,8 @@ public class EdDSAJwtParser {
     return payload;
   }
 
-  private boolean verifySignature(byte[] headerBytes, byte[] payloadBytes, byte[] signatureBytes) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+  private boolean verifySignature(byte[] headerBytes, byte[] payloadBytes, byte[] signatureBytes)
+      throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
     final Signature s = Signature.getInstance(algorithm.getJcaName());
     s.initVerify(publicKey);
     s.update(headerBytes);

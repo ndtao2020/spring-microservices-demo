@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@Threads(Threads.MAX)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -36,31 +37,12 @@ public class FinalKeyword {
 
   @Benchmark
   public String concatenateStringsStringBuilder() {
-    String builder = new String(TOKEN_HEADER, UTF_8) +
+    return new String(TOKEN_HEADER, UTF_8) +
         DELIMITER +
         new String(TOKEN_PAYLOAD, UTF_8) +
         DELIMITER +
         new String(TOKEN_SIGNATURE, UTF_8);
-    return builder;
   }
-
-//    @Benchmark
-//    public byte[] plainJava() {
-//        byte[] bytes = new byte[TOKEN_HEADER.length + DELIMITER_BYTES.length + TOKEN_PAYLOAD.length + DELIMITER_BYTES.length + TOKEN_SIGNATURE.length];
-//        // for loop
-//        for (int i = 0; i < TOKEN_HEADER.length + 1; i++) {
-//            bytes[i] = TOKEN_HEADER[i];
-//        }
-//        bytes[TOKEN_HEADER.length] = DELIMITER_BYTES[0];
-//        for (int i = 0; i < TOKEN_PAYLOAD.length; i++) {
-//            bytes[i + TOKEN_HEADER.length + DELIMITER_BYTES.length] = TOKEN_PAYLOAD[i];
-//        }
-//        bytes[TOKEN_HEADER.length + DELIMITER_BYTES.length + TOKEN_PAYLOAD.length] = DELIMITER_BYTES[0];
-//        for (int i = 0; i < TOKEN_SIGNATURE.length; i++) {
-//            bytes[i + TOKEN_HEADER.length + DELIMITER_BYTES.length + TOKEN_PAYLOAD.length + DELIMITER_BYTES.length] = TOKEN_SIGNATURE[i];
-//        }
-//        return bytes;
-//    }
 
   @Benchmark
   public String concatenateStringsArrays() {

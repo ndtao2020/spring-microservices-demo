@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Claims;
 import com.microservice.example.jwt.Payload;
-import com.microservice.example.jwt.rsa.RSAJwtArrayBuilder;
 import com.microservice.example.jwt.rsa.RSAJwtBuilder;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -22,6 +21,10 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.NumericDate;
 import org.jose4j.lang.JoseException;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
@@ -32,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Threads(Threads.MAX)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -80,32 +84,6 @@ public class GenerateTokenRS256 {
     payload.setExp(expiresAt.getTime() / 1000);
 
     return jwtBuilder.compact(payload);
-  }
-
-  @Benchmark
-  public String customJWTArrayCopy() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-    RSAJwtBuilder jwtBuilder = new RSAJwtBuilder(privateKey, com.microservice.example.jwt.Algorithm.RS256);
-
-    Map<String, Object> map = new HashMap<>();
-    map.put(Claims.JWT_ID, JWT_ID);
-    map.put(Claims.ISSUER, ISSUER);
-    map.put(Claims.SUBJECT, SUBJECT);
-    map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
-
-    return jwtBuilder.compactArray(map);
-  }
-
-  @Benchmark
-  public String customJWTArrayCopy2() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-    RSAJwtArrayBuilder jwtBuilder = new RSAJwtArrayBuilder(privateKey, com.microservice.example.jwt.Algorithm.RS256);
-
-    Map<String, Object> map = new HashMap<>();
-    map.put(Claims.JWT_ID, JWT_ID);
-    map.put(Claims.ISSUER, ISSUER);
-    map.put(Claims.SUBJECT, SUBJECT);
-    map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
-
-    return jwtBuilder.compactArray(map);
   }
 
   @Benchmark
@@ -177,5 +155,14 @@ public class GenerateTokenRS256 {
     map.put(Claims.SUBJECT, SUBJECT);
     map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
     return new JWSBuilder().jsonContent(map).rsa256(privateKey);
+  }
+
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(GenerateTokenRS256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
   }
 }

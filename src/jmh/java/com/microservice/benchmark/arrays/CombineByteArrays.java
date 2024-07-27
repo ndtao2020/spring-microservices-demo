@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.random.RandomGenerator;
 
+@Threads(Threads.MAX)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -33,7 +34,7 @@ public class CombineByteArrays {
     byte[] combined = new byte[first.length + second.length + third.length + fourth.length];
     // for loop
     System.arraycopy(first, 0, combined, 0, first.length);
-    System.arraycopy(second, 0, combined, 0 + first.length, second.length);
+    System.arraycopy(second, 0, combined, first.length, second.length);
     for (int i = 0; i < third.length; i++) {
       combined[i + first.length + second.length] = third[i];
     }

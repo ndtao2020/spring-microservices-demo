@@ -3,6 +3,7 @@ package com.microservice.benchmark.jwt.hmac;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Payload;
 import com.microservice.example.jwt.hmac.HMACJwtParser;
@@ -12,7 +13,6 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import io.fusionauth.jwt.hmac.HMACVerifier;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.vertx.core.Vertx;
@@ -30,6 +30,10 @@ import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.keys.HmacKey;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -39,6 +43,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Threads(Threads.MAX)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -69,24 +74,23 @@ public class VerifyTokenHS256 {
     return jwtParser.verify(generatedToken);
   }
 
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(VerifyTokenHS256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
+
   @Benchmark
-  public JWTVerifier auth0JWT() {
-    return JWT.require(Algorithm.HMAC256(secretBytes))
+  public DecodedJWT auth0JWT() {
+    final JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(secretBytes))
         .withJWTId(JWT_ID)
         .withIssuer(ISSUER)
         .withSubject(SUBJECT)
         .build();
-  }
-
-  @Benchmark
-  public Jwt jsonWebToken() {
-    return Jwts.parser()
-        .verifyWith(Keys.hmacShaKeyFor(secretBytes))
-        .requireId(JWT_ID)
-        .requireIssuer(ISSUER)
-        .requireSubject(SUBJECT)
-        .build()
-        .parse(generatedToken);
+    return jwtVerifier.verify(generatedToken);
   }
 
   @Benchmark
@@ -134,5 +138,16 @@ public class VerifyTokenHS256 {
       throw new SignatureException("Token is invalid !");
     }
     return input.readJsonContent(Payload.class);
+  }
+
+  @Benchmark
+  public Object jsonWebToken() {
+    return Jwts.parser()
+        .verifyWith(Keys.hmacShaKeyFor(secretBytes))
+        .requireId(JWT_ID)
+        .requireIssuer(ISSUER)
+        .requireSubject(SUBJECT)
+        .build()
+        .parse(generatedToken);
   }
 }

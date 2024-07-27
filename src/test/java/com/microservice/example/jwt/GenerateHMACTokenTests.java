@@ -55,21 +55,6 @@ class GenerateHMACTokenTests {
   private final ZonedDateTime zoneExpiresAt = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(60);
 
   @Test
-  void customJWT() throws NoSuchAlgorithmException, InvalidKeyException {
-    HMACJwtBuilder jwtBuilder = new HMACJwtBuilder(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
-
-    Map<String, Object> map = new HashMap<>();
-    map.put(Claims.JWT_ID, JWT_ID);
-    map.put(Claims.ISSUER, ISSUER);
-    map.put(Claims.SUBJECT, SUBJECT);
-    map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
-
-    String token = jwtBuilder.compact(map);
-
-    assertNotNull(token);
-  }
-
-  @Test
   void customJWTwithDTO() throws NoSuchAlgorithmException, InvalidKeyException {
     HMACJwtBuilder jwtBuilder = new HMACJwtBuilder(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
 

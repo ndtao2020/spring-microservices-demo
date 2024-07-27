@@ -30,6 +30,10 @@ import org.jose4j.jwt.NumericDate;
 import org.jose4j.keys.HmacKey;
 import org.jose4j.lang.JoseException;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -41,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Threads(Threads.MAX)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -55,19 +60,6 @@ public class GenerateTokenHS256 {
   private final Date expiresAt = new Date(System.currentTimeMillis() + (60 * 60 * 1000));
   private final NumericDate numericDate = NumericDate.fromMilliseconds(expiresAt.getTime());
   private final ZonedDateTime zoneExpiresAt = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(60);
-
-  @Benchmark
-  public String customJWT() throws NoSuchAlgorithmException, InvalidKeyException {
-    HMACJwtBuilder jwtBuilder = new HMACJwtBuilder(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
-
-    Map<String, Object> map = new HashMap<>();
-    map.put(Claims.JWT_ID, JWT_ID);
-    map.put(Claims.ISSUER, ISSUER);
-    map.put(Claims.SUBJECT, SUBJECT);
-    map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
-
-    return jwtBuilder.compact(map);
-  }
 
   @Benchmark
   public String customJWTwithDTO() throws NoSuchAlgorithmException, InvalidKeyException {
@@ -171,5 +163,14 @@ public class GenerateTokenHS256 {
     map.put(Claims.SUBJECT, SUBJECT);
     map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
     return new JWSBuilder().jsonContent(map).hmac256(secretBytes);
+  }
+
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(GenerateTokenHS256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
   }
 }
