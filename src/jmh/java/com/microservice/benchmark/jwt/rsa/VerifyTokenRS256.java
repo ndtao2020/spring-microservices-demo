@@ -3,6 +3,7 @@ package com.microservice.benchmark.jwt.rsa;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Payload;
 import com.microservice.example.jwt.rsa.RSAJwtParser;
@@ -11,7 +12,6 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import io.fusionauth.jwt.rsa.RSAVerifier;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.JWSInputException;
@@ -22,6 +22,10 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
@@ -30,6 +34,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Threads(Threads.MAX)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -61,33 +66,26 @@ public class VerifyTokenRS256 {
   @Benchmark
   public Payload customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     RSAJwtParser jwtParser = new RSAJwtParser(publicKey, com.microservice.example.jwt.Algorithm.RS256);
-    return jwtParser.verify(generatedToken);
-  }
-
-  @Benchmark
-  public Payload customJWTIndexOf() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-    RSAJwtParser jwtParser = new RSAJwtParser(publicKey, com.microservice.example.jwt.Algorithm.RS256);
     return jwtParser.verifyIndexOf(generatedToken);
   }
 
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(VerifyTokenRS256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
+
   @Benchmark
-  public JWTVerifier auth0JWT() {
-    return JWT.require(Algorithm.RSA256(publicKey))
+  public DecodedJWT auth0JWT() {
+    final JWTVerifier jwtVerifier = JWT.require(Algorithm.RSA256(publicKey))
         .withJWTId(JWT_ID)
         .withIssuer(ISSUER)
         .withSubject(SUBJECT)
         .build();
-  }
-
-  @Benchmark
-  public Jwt jsonWebToken() {
-    return Jwts.parser()
-        .verifyWith(publicKey)
-        .requireId(JWT_ID)
-        .requireIssuer(ISSUER)
-        .requireSubject(SUBJECT)
-        .build()
-        .parse(generatedToken);
+    return jwtVerifier.verify(generatedToken);
   }
 
   @Benchmark
@@ -124,5 +122,16 @@ public class VerifyTokenRS256 {
       throw new SignatureException("Token is invalid !");
     }
     return input.readJsonContent(Payload.class);
+  }
+
+  @Benchmark
+  public Object jsonWebToken() {
+    return Jwts.parser()
+        .verifyWith(publicKey)
+        .requireId(JWT_ID)
+        .requireIssuer(ISSUER)
+        .requireSubject(SUBJECT)
+        .build()
+        .parse(generatedToken);
   }
 }

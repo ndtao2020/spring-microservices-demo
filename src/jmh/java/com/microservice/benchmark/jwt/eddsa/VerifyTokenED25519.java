@@ -4,13 +4,16 @@ import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Algorithm;
 import com.microservice.example.jwt.Payload;
 import com.microservice.example.jwt.eddsa.EdDSAJwtParser;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.io.IOException;
 import java.security.*;
@@ -18,6 +21,7 @@ import java.security.interfaces.EdECPublicKey;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Threads(Threads.MAX)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -51,15 +55,13 @@ public class VerifyTokenED25519 {
     return jwtParser.verify(generatedToken);
   }
 
-  @Benchmark
-  public Jwt jsonWebToken() {
-    return Jwts.parser()
-        .verifyWith(publicKey)
-        .requireId(JWT_ID)
-        .requireIssuer(ISSUER)
-        .requireSubject(SUBJECT)
-        .build()
-        .parse(generatedToken);
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(VerifyTokenED25519.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
   }
 
   @Benchmark
@@ -72,5 +74,16 @@ public class VerifyTokenED25519 {
         .setVerificationKey(publicKey)
         .build();
     return jwtConsumer.processToClaims(generatedToken);
+  }
+
+  @Benchmark
+  public Object jsonWebToken() {
+    return Jwts.parser()
+        .verifyWith(publicKey)
+        .requireId(JWT_ID)
+        .requireIssuer(ISSUER)
+        .requireSubject(SUBJECT)
+        .build()
+        .parse(generatedToken);
   }
 }

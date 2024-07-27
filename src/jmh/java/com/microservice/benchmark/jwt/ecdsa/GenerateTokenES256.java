@@ -3,7 +3,6 @@ package com.microservice.benchmark.jwt.ecdsa;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.microservice.example.RandomUtils;
-import com.microservice.example.jwt.Claims;
 import com.microservice.example.jwt.Payload;
 import com.microservice.example.jwt.ecdsa.ECDSAJwtBuilder;
 import com.nimbusds.jose.JOSEException;
@@ -20,6 +19,10 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.NumericDate;
 import org.jose4j.lang.JoseException;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
@@ -27,10 +30,9 @@ import java.security.spec.ECGenParameterSpec;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Threads(Threads.MAX)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -53,19 +55,6 @@ public class GenerateTokenES256 {
     KeyPair keyPair = generator.generateKeyPair();
     // assign variables
     privateKey = (ECPrivateKey) keyPair.getPrivate();
-  }
-
-  @Benchmark
-  public String customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-    ECDSAJwtBuilder jwtBuilder = new ECDSAJwtBuilder(privateKey, com.microservice.example.jwt.Algorithm.ES256);
-
-    Map<String, Object> map = new HashMap<>();
-    map.put(Claims.JWT_ID, JWT_ID);
-    map.put(Claims.ISSUER, ISSUER);
-    map.put(Claims.SUBJECT, SUBJECT);
-    map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
-
-    return jwtBuilder.compact(map);
   }
 
   @Benchmark
@@ -140,5 +129,14 @@ public class GenerateTokenES256 {
     jwe.setKey(privateKey);
 
     return jwe.getCompactSerialization();
+  }
+
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(GenerateTokenES256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
   }
 }

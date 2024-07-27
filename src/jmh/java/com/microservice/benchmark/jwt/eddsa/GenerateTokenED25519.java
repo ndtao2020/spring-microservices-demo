@@ -1,7 +1,7 @@
 package com.microservice.benchmark.jwt.eddsa;
 
 import com.microservice.example.RandomUtils;
-import com.microservice.example.jwt.Claims;
+import com.microservice.example.jwt.Payload;
 import com.microservice.example.jwt.eddsa.EdDSAJwtBuilder;
 import io.jsonwebtoken.Jwts;
 import org.jose4j.jws.AlgorithmIdentifiers;
@@ -10,14 +10,17 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.NumericDate;
 import org.jose4j.lang.JoseException;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.security.*;
 import java.security.interfaces.EdECPrivateKey;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Threads(Threads.MAX)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -39,15 +42,13 @@ public class GenerateTokenED25519 {
     privateKey = (EdECPrivateKey) keyPair.getPrivate();
   }
 
-  @Benchmark
-  public String customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-    var jwtBuilder = new EdDSAJwtBuilder(privateKey, com.microservice.example.jwt.Algorithm.ED25519);
-    Map<String, Object> map = new HashMap<>();
-    map.put(Claims.JWT_ID, JWT_ID);
-    map.put(Claims.ISSUER, ISSUER);
-    map.put(Claims.SUBJECT, SUBJECT);
-    map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
-    return jwtBuilder.compact(map);
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(GenerateTokenED25519.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
   }
 
   @Benchmark
@@ -76,5 +77,16 @@ public class GenerateTokenED25519 {
     jwe.setKey(privateKey);
 
     return jwe.getCompactSerialization();
+  }
+
+  @Benchmark
+  public String customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    var jwtBuilder = new EdDSAJwtBuilder(privateKey, com.microservice.example.jwt.Algorithm.ED25519);
+    Payload payload = new Payload();
+    payload.setJti(JWT_ID);
+    payload.setIss(ISSUER);
+    payload.setSub(SUBJECT);
+    payload.setExp(expiresAt.getTime() / 1000);
+    return jwtBuilder.compact(payload);
   }
 }

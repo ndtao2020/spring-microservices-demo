@@ -26,6 +26,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '21'
+          distribution: 'liberica'
           cache: 'gradle'
       # Setup gradle
       - name: Validate Gradle wrapper
@@ -35,7 +36,6 @@ jobs:
       # Building and testing code
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-      # Execute Benchmarks
       - name: Execute Benchmarks
         run: ./gradlew jmh
       # Packaging workflow data as artifacts

@@ -3,6 +3,7 @@ package com.microservice.benchmark.jwt.ecdsa;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Payload;
 import com.microservice.example.jwt.ecdsa.ECDSAJwtParser;
@@ -11,13 +12,16 @@ import com.nimbusds.jose.crypto.ECDSAVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import io.fusionauth.jwt.ec.ECVerifier;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.io.IOException;
 import java.security.*;
@@ -28,6 +32,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Threads(Threads.MAX)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -56,30 +61,29 @@ public class VerifyTokenES256 {
         .sign(Algorithm.ECDSA256((ECPrivateKey) keyPair.getPrivate()));
   }
 
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(VerifyTokenES256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
+
   @Benchmark
   public Payload customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
-    ECDSAJwtParser jwtParser = new ECDSAJwtParser(publicKey, com.microservice.example.jwt.Algorithm.ES256);
+    final ECDSAJwtParser jwtParser = new ECDSAJwtParser(publicKey, com.microservice.example.jwt.Algorithm.ES256);
     return jwtParser.verify(generatedToken);
   }
 
   @Benchmark
-  public JWTVerifier auth0JWT() {
-    return JWT.require(Algorithm.ECDSA256(publicKey))
+  public DecodedJWT auth0JWT() {
+    final JWTVerifier jwtVerifier = JWT.require(Algorithm.ECDSA256(publicKey))
         .withJWTId(JWT_ID)
         .withIssuer(ISSUER)
         .withSubject(SUBJECT)
         .build();
-  }
-
-  @Benchmark
-  public Jwt jsonWebToken() {
-    return Jwts.parser()
-        .verifyWith(publicKey)
-        .requireId(JWT_ID)
-        .requireIssuer(ISSUER)
-        .requireSubject(SUBJECT)
-        .build()
-        .parse(generatedToken);
+    return jwtVerifier.verify(generatedToken);
   }
 
   @Benchmark
@@ -107,5 +111,16 @@ public class VerifyTokenES256 {
         .setVerificationKey(publicKey)
         .build();
     return jwtConsumer.processToClaims(generatedToken);
+  }
+
+  @Benchmark
+  public Object jsonWebToken() {
+    return Jwts.parser()
+        .verifyWith(publicKey)
+        .requireId(JWT_ID)
+        .requireIssuer(ISSUER)
+        .requireSubject(SUBJECT)
+        .build()
+        .parse(generatedToken);
   }
 }

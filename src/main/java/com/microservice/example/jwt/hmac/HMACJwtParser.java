@@ -7,6 +7,7 @@ import com.microservice.example.jwt.Payload;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -30,10 +31,11 @@ public class HMACJwtParser {
     this.algorithm = algorithm;
   }
 
-  public Payload verify(String token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-    String[] r = token.split("\\" + HMACJwtBuilder.DELIMITER);
-    byte[] n = r[1].getBytes(UTF_8);
-    if (!verifySignature(r[0].getBytes(UTF_8), n, decoder.decode(r[2]))) {
+  public Payload verify(String t) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    int i1 = t.indexOf(HMACJwtBuilder.DELIMITER);
+    int i2 = t.indexOf(HMACJwtBuilder.DELIMITER, i1 + 1);
+    byte[] n = t.substring(i1 + 1, i2).getBytes(StandardCharsets.UTF_8);
+    if (!verifySignature(t.substring(0, i1).getBytes(StandardCharsets.UTF_8), n, decoder.decode(t.substring(i2 + 1)))) {
       throw new SignatureException("Token is invalid !");
     }
     Payload payload = JSON.parseObject(decoder.decode(n), Payload.class);

@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Threads(Threads.MAX)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -67,11 +68,6 @@ public class SerializeJsonFromDTO {
     final JSONObject jsonObject = new JSONObject(payload);
     return jsonObject.toString();
   }
-
-//    @Benchmark
-//    public String cedarJsonIO() {
-//        return JsonWriter.objectToJson(payload, Map.of(JsonWriter.TYPE, false));
-//    }
 
   @Benchmark
   public String alibabaFastjson2() {
