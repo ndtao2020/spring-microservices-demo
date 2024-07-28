@@ -180,6 +180,8 @@ dependencies {
     implementation 'com.google.crypto.tink:tink:1.14.0'
     // Object Serialization
     // https://mvnrepository.com/open-source/object-serialization
+    // https://github.com/activej/jvm-serializers
+    // https://www.reddit.com/r/java/comments/12eltbg/the_state_of_java_object_serialization_libraries/
     implementation "io.activej:activej-serializer:${activejVersion}"
     implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
     implementation 'org.apache.thrift:libthrift:0.20.0'
@@ -208,9 +210,9 @@ dependencies {
 }
 
 jmh {
-    warmupIterations = 3
-    iterations = 3
-    fork = 2
+    warmupIterations = 1
+    iterations = 1
+    fork = 1
 }
 
 test {
