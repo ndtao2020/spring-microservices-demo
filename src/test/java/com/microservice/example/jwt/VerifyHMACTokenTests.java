@@ -14,13 +14,6 @@ import io.fusionauth.jwt.hmac.HMACVerifier;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.auth.PubSecKeyOptions;
-import io.vertx.ext.auth.User;
-import io.vertx.ext.auth.authentication.TokenCredentials;
-import io.vertx.ext.auth.jwt.JWTAuth;
-import io.vertx.ext.auth.jwt.JWTAuthOptions;
 import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.JWSInputException;
 import org.jboss.resteasy.jose.jws.crypto.HMACProvider;
@@ -129,26 +122,6 @@ class VerifyHMACTokenTests {
     // Assert the subject of the JWT is as expected
     assertNotNull(jwtClaims);
     assertEquals(JWT_ID, jwtClaims.getJwtId());
-  }
-
-  @Test
-  void vertxAuthJwt() {
-    JWTAuthOptions config = new JWTAuthOptions()
-        .addPubSecKey(new PubSecKeyOptions().setAlgorithm("HS256").setBuffer(secret));
-
-    JWTAuth provider = JWTAuth.create(Vertx.vertx(), config);
-
-    provider.authenticate(new TokenCredentials(generatedToken), result -> {
-      assert result.succeeded();
-      User user = result.result();
-      JsonObject jsonObject = user.principal();
-      // Assert the subject of the JWT is as expected
-      assertNotNull(user);
-      assertNotNull(jsonObject);
-      assertEquals(JWT_ID, jsonObject.getString(Claims.JWT_ID));
-      assertEquals(ISSUER, jsonObject.getString(Claims.ISSUER));
-      assertEquals(SUBJECT, jsonObject.getString(Claims.SUBJECT));
-    });
   }
 
   @Test

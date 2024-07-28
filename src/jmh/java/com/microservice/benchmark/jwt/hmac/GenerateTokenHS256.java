@@ -16,12 +16,6 @@ import io.fusionauth.jwt.Signer;
 import io.fusionauth.jwt.hmac.HMACSigner;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.auth.JWTOptions;
-import io.vertx.ext.auth.PubSecKeyOptions;
-import io.vertx.ext.auth.jwt.JWTAuth;
-import io.vertx.ext.auth.jwt.JWTAuthOptions;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
@@ -60,6 +54,15 @@ public class GenerateTokenHS256 {
   private final Date expiresAt = new Date(System.currentTimeMillis() + (60 * 60 * 1000));
   private final NumericDate numericDate = NumericDate.fromMilliseconds(expiresAt.getTime());
   private final ZonedDateTime zoneExpiresAt = ZonedDateTime.now(ZoneOffset.UTC).plusMinutes(60);
+
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(GenerateTokenHS256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
 
   @Benchmark
   public String customJWTwithDTO() throws NoSuchAlgorithmException, InvalidKeyException {
@@ -136,26 +139,6 @@ public class GenerateTokenHS256 {
   }
 
   @Benchmark
-  public String vertxAuthJwt() {
-    JWTOptions options = new JWTOptions();
-    options.setIssuer(ISSUER);
-    options.setAlgorithm("HS256");
-    options.setSubject(SUBJECT);
-    options.setExpiresInSeconds((int) (expiresAt.getTime() / 1000));
-
-    JWTAuthOptions config = new JWTAuthOptions()
-        .addPubSecKey(new PubSecKeyOptions().setAlgorithm("HS256").setBuffer(secret))
-        .setJWTOptions(options);
-
-    JWTAuth provider = JWTAuth.create(Vertx.vertx(), config);
-
-    JsonObject jsonObject = new JsonObject();
-    jsonObject.put(Claims.JWT_ID, JWT_ID);
-
-    return provider.generateToken(jsonObject);
-  }
-
-  @Benchmark
   public String jbossJoseJwt() {
     Map<String, Object> map = new HashMap<>();
     map.put(Claims.JWT_ID, JWT_ID);
@@ -163,14 +146,5 @@ public class GenerateTokenHS256 {
     map.put(Claims.SUBJECT, SUBJECT);
     map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
     return new JWSBuilder().jsonContent(map).hmac256(secretBytes);
-  }
-
-  public static void main(String[] args) throws RunnerException {
-    Options opt = new OptionsBuilder()
-        .include(GenerateTokenHS256.class.getSimpleName())
-        .warmupIterations(1)
-        .forks(1)
-        .build();
-    new Runner(opt).run();
   }
 }

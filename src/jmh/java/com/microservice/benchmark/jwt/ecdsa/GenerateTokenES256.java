@@ -48,6 +48,15 @@ public class GenerateTokenES256 {
 
   private ECPrivateKey privateKey;
 
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(GenerateTokenES256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
+
   @Setup
   public void setup() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
     KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
@@ -93,7 +102,7 @@ public class GenerateTokenES256 {
 
   @Benchmark
   public String nimbusJoseJWT() throws JOSEException {
-    SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), new JWTClaimsSet.Builder()
+    SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.ES256), new JWTClaimsSet.Builder()
         .jwtID(JWT_ID)
         .issuer(ISSUER)
         .subject(SUBJECT)
@@ -129,14 +138,5 @@ public class GenerateTokenES256 {
     jwe.setKey(privateKey);
 
     return jwe.getCompactSerialization();
-  }
-
-  public static void main(String[] args) throws RunnerException {
-    Options opt = new OptionsBuilder()
-        .include(GenerateTokenES256.class.getSimpleName())
-        .warmupIterations(1)
-        .forks(1)
-        .build();
-    new Runner(opt).run();
   }
 }

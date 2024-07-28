@@ -1,7 +1,6 @@
 package com.microservice.benchmark.json;
 
 import com.alibaba.fastjson2.JSON;
-import com.dslplatform.json.DslJson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -14,9 +13,6 @@ import net.minidev.json.JSONValue;
 import org.json.JSONObject;
 import org.openjdk.jmh.annotations.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -72,15 +68,6 @@ public class SerializeJsonFromDTO {
   @Benchmark
   public String alibabaFastjson2() {
     return JSON.toJSONString(payload);
-  }
-
-  @Benchmark
-  public String dslJson() throws IOException {
-    final DslJson<Object> json = new DslJson<>();
-    try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-      json.serialize(payload, stream);
-      return stream.toString(StandardCharsets.UTF_8);
-    }
   }
 
   @Benchmark

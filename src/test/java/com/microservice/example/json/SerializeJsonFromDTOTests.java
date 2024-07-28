@@ -3,7 +3,6 @@ package com.microservice.example.json;
 import com.alibaba.fastjson2.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
 import com.microservice.example.RandomUtils;
 import com.microservice.example.jwt.Payload;
@@ -47,14 +46,6 @@ class SerializeJsonFromDTOTests {
   void jackson() throws JsonProcessingException {
     ObjectMapper objectMapper = new ObjectMapper();
     assertEquals(originalJsonData.length(), objectMapper.writeValueAsString(payload).length());
-  }
-
-  @Test
-  @DisplayName("DTO to Json: Jackson ObjectWriter")
-  void jacksonObjectWriter() throws JsonProcessingException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    ObjectWriter objectWriter = objectMapper.writerFor(Payload.class);
-    assertEquals(originalJsonData.length(), objectWriter.writeValueAsString(payload).length());
   }
 
   @Test

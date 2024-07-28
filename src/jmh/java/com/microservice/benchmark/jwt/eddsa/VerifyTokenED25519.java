@@ -33,9 +33,19 @@ public class VerifyTokenED25519 {
   private EdECPublicKey publicKey;
   private String generatedToken;
 
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(VerifyTokenED25519.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
+
   @Setup
   public void setup() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
     KeyPairGenerator generator = KeyPairGenerator.getInstance("Ed25519");
+    generator.initialize(255, new SecureRandom());
     KeyPair keyPair = generator.generateKeyPair();
     // assign variables
     publicKey = (EdECPublicKey) keyPair.getPublic();
@@ -53,15 +63,6 @@ public class VerifyTokenED25519 {
   public Payload customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
     var jwtParser = new EdDSAJwtParser(publicKey, Algorithm.ED25519);
     return jwtParser.verify(generatedToken);
-  }
-
-  public static void main(String[] args) throws RunnerException {
-    Options opt = new OptionsBuilder()
-        .include(VerifyTokenED25519.class.getSimpleName())
-        .warmupIterations(1)
-        .forks(1)
-        .build();
-    new Runner(opt).run();
   }
 
   @Benchmark

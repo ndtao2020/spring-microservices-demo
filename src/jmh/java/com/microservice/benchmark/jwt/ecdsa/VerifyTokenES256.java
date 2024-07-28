@@ -45,6 +45,15 @@ public class VerifyTokenES256 {
   private ECPublicKey publicKey;
   private String generatedToken;
 
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(VerifyTokenES256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
+
   @Setup
   public void setup() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
     KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
@@ -59,15 +68,6 @@ public class VerifyTokenES256 {
         .withSubject(SUBJECT)
         .withExpiresAt(new Date(System.currentTimeMillis() + (60 * 60 * 1000)))
         .sign(Algorithm.ECDSA256((ECPrivateKey) keyPair.getPrivate()));
-  }
-
-  public static void main(String[] args) throws RunnerException {
-    Options opt = new OptionsBuilder()
-        .include(VerifyTokenES256.class.getSimpleName())
-        .warmupIterations(1)
-        .forks(1)
-        .build();
-    new Runner(opt).run();
   }
 
   @Benchmark

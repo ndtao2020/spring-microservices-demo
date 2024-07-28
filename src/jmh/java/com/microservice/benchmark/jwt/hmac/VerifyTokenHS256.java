@@ -15,11 +15,6 @@ import com.nimbusds.jwt.SignedJWT;
 import io.fusionauth.jwt.hmac.HMACVerifier;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.vertx.core.Vertx;
-import io.vertx.ext.auth.PubSecKeyOptions;
-import io.vertx.ext.auth.authentication.TokenCredentials;
-import io.vertx.ext.auth.jwt.JWTAuth;
-import io.vertx.ext.auth.jwt.JWTAuthOptions;
 import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.JWSInputException;
 import org.jboss.resteasy.jose.jws.crypto.HMACProvider;
@@ -58,6 +53,15 @@ public class VerifyTokenHS256 {
 
   private String generatedToken;
 
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(VerifyTokenHS256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
+
   @Setup
   public void setup() {
     generatedToken = JWT.create()
@@ -72,15 +76,6 @@ public class VerifyTokenHS256 {
   public Payload customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     HMACJwtParser jwtParser = new HMACJwtParser(secretBytes, com.microservice.example.jwt.Algorithm.HS256);
     return jwtParser.verify(generatedToken);
-  }
-
-  public static void main(String[] args) throws RunnerException {
-    Options opt = new OptionsBuilder()
-        .include(VerifyTokenHS256.class.getSimpleName())
-        .warmupIterations(1)
-        .forks(1)
-        .build();
-    new Runner(opt).run();
   }
 
   @Benchmark
@@ -119,16 +114,6 @@ public class VerifyTokenHS256 {
         .setVerificationKey(new HmacKey(secretBytes))
         .build();
     return jwtConsumer.processToClaims(generatedToken);
-  }
-
-  @Benchmark
-  public void vertxAuthJwt() {
-    JWTAuthOptions config = new JWTAuthOptions()
-        .addPubSecKey(new PubSecKeyOptions().setAlgorithm("HS256").setBuffer(secret));
-    JWTAuth provider = JWTAuth.create(Vertx.vertx(), config);
-    provider.authenticate(new TokenCredentials(generatedToken), result -> {
-      assert result.succeeded();
-    });
   }
 
   @Benchmark

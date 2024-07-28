@@ -1,5 +1,6 @@
 package com.microservice.example.dto;
 
+import io.activej.serializer.annotations.Serialize;
 import lombok.Data;
 
 import java.io.Serial;
@@ -13,12 +14,20 @@ public class LoginDTO implements Serializable {
   @Serial
   private static final long serialVersionUID = -1221L;
 
-  private String id;
-  private String email;
-  private String username;
-  private String password;
-  private Integer age;
-  private Date created;
-  private List<String> roles;
-  private String website;
+  @Serialize
+  public String id;
+  @Serialize
+  public String email;
+  @Serialize
+  public String username;
+  @Serialize
+  public String password;
+  @Serialize
+  public Integer age;
+  @Serialize
+  public Date created;
+  @Serialize
+  public List<String> roles;
+  @Serialize
+  public String website;
 }

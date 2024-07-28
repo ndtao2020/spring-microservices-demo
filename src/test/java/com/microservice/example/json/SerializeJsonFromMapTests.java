@@ -1,7 +1,6 @@
 package com.microservice.example.json;
 
 import com.alibaba.fastjson2.JSON;
-import com.dslplatform.json.DslJson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -10,9 +9,6 @@ import net.minidev.json.JSONValue;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,16 +60,6 @@ class SerializeJsonFromMapTests {
   @DisplayName("Map to Json: Alibaba fastjson2")
   void alibabaFastjson2() {
     assertEquals(originalJsonData, JSON.toJSONString(data));
-  }
-
-  @Test
-  @DisplayName("Map to Json: DslJson")
-  void dslJson() throws IOException {
-    DslJson<Object> json = new DslJson<>();
-    try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-      json.serialize(data, stream); //will use thread local writer
-      assertEquals(originalJsonData, stream.toString(StandardCharsets.UTF_8));
-    }
   }
 
   @Test

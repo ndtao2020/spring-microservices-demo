@@ -34,14 +34,6 @@ public class GenerateTokenED25519 {
   private final NumericDate numericDate = NumericDate.fromMilliseconds(expiresAt.getTime());
   private EdECPrivateKey privateKey;
 
-  @Setup
-  public void setup() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-    KeyPairGenerator generator = KeyPairGenerator.getInstance("Ed25519");
-    KeyPair keyPair = generator.generateKeyPair();
-    // assign variables
-    privateKey = (EdECPrivateKey) keyPair.getPrivate();
-  }
-
   public static void main(String[] args) throws RunnerException {
     Options opt = new OptionsBuilder()
         .include(GenerateTokenED25519.class.getSimpleName())
@@ -49,6 +41,15 @@ public class GenerateTokenED25519 {
         .forks(1)
         .build();
     new Runner(opt).run();
+  }
+
+  @Setup
+  public void setup() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    KeyPairGenerator generator = KeyPairGenerator.getInstance("Ed25519");
+    generator.initialize(255, new SecureRandom());
+    KeyPair keyPair = generator.generateKeyPair();
+    // assign variables
+    privateKey = (EdECPrivateKey) keyPair.getPrivate();
   }
 
   @Benchmark
