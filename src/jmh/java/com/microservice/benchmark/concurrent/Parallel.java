@@ -118,6 +118,24 @@ public class Parallel {
   }
 
   @Benchmark
+  public void executorSingleThread() {
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
+    List<CompletableFuture<Void>> futures = new ArrayList<>();
+    for (int i = 0; i < 100; i++) {
+      CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+        try {
+          Thread.sleep(millis);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }, executorService);
+      futures.add(future);
+    }
+    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+    executorService.shutdown();
+  }
+
+  @Benchmark
   public void completableFuture() {
     List<CompletableFuture<Void>> futures = new ArrayList<>();
     for (int i = 0; i < 100; i++) {

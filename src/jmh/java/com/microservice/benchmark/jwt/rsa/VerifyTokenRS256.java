@@ -47,6 +47,15 @@ public class VerifyTokenRS256 {
   private RSAPublicKey publicKey;
   private String generatedToken;
 
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(VerifyTokenRS256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
+
   @Setup
   public void setup() throws NoSuchAlgorithmException {
     KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
@@ -67,15 +76,6 @@ public class VerifyTokenRS256 {
   public Payload customJWT() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     RSAJwtParser jwtParser = new RSAJwtParser(publicKey, com.microservice.example.jwt.Algorithm.RS256);
     return jwtParser.verifyIndexOf(generatedToken);
-  }
-
-  public static void main(String[] args) throws RunnerException {
-    Options opt = new OptionsBuilder()
-        .include(VerifyTokenRS256.class.getSimpleName())
-        .warmupIterations(1)
-        .forks(1)
-        .build();
-    new Runner(opt).run();
   }
 
   @Benchmark

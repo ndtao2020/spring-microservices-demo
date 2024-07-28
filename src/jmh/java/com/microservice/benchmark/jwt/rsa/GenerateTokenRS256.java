@@ -51,6 +51,15 @@ public class GenerateTokenRS256 {
 
   private RSAPrivateKey privateKey;
 
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(GenerateTokenRS256.class.getSimpleName())
+        .warmupIterations(1)
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
+
   @Setup
   public void setup() throws NoSuchAlgorithmException {
     KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
@@ -155,14 +164,5 @@ public class GenerateTokenRS256 {
     map.put(Claims.SUBJECT, SUBJECT);
     map.put(Claims.EXPIRES_AT, expiresAt.getTime() / 1000);
     return new JWSBuilder().jsonContent(map).rsa256(privateKey);
-  }
-
-  public static void main(String[] args) throws RunnerException {
-    Options opt = new OptionsBuilder()
-        .include(GenerateTokenRS256.class.getSimpleName())
-        .warmupIterations(1)
-        .forks(1)
-        .build();
-    new Runner(opt).run();
   }
 }

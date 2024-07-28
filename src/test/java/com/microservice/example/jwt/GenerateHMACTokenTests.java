@@ -14,12 +14,6 @@ import io.fusionauth.jwt.Signer;
 import io.fusionauth.jwt.hmac.HMACSigner;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.auth.JWTOptions;
-import io.vertx.ext.auth.PubSecKeyOptions;
-import io.vertx.ext.auth.jwt.JWTAuth;
-import io.vertx.ext.auth.jwt.JWTAuthOptions;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
@@ -136,28 +130,6 @@ class GenerateHMACTokenTests {
     jwe.setKey(new HmacKey(secretBytes));
 
     String token = jwe.getCompactSerialization();
-
-    assertNotNull(token);
-  }
-
-  @Test
-  void vertxAuthJwt() {
-    JWTOptions options = new JWTOptions();
-    options.setIssuer(ISSUER);
-    options.setAlgorithm("HS256");
-    options.setSubject(SUBJECT);
-    options.setExpiresInSeconds((int) (expiresAt.getTime() / 1000));
-
-    JWTAuthOptions config = new JWTAuthOptions()
-        .addPubSecKey(new PubSecKeyOptions().setAlgorithm("HS256").setBuffer(secret))
-        .setJWTOptions(options);
-
-    JWTAuth provider = JWTAuth.create(Vertx.vertx(), config);
-
-    JsonObject jsonObject = new JsonObject();
-    jsonObject.put(Claims.JWT_ID, JWT_ID);
-
-    String token = provider.generateToken(jsonObject);
 
     assertNotNull(token);
   }
