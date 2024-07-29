@@ -136,7 +136,7 @@ dependencies {
     // https://www.baeldung.com/java-performance-mapping-frameworks
     implementation 'ma.glasnost.orika:orika-core:1.5.4'
     implementation 'org.mapstruct:mapstruct:1.6.0.RC1'
-    implementation 'org.modelmapper:modelmapper:3.2.0'
+    implementation 'org.modelmapper:modelmapper:3.2.1'
     // libraries of base64
     // https://mvnrepository.com/open-source/base64-libraries
     implementation 'com.google.guava:guava:33.2.1-jre'
