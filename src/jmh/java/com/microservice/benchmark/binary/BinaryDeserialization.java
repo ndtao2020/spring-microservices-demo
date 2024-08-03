@@ -1,5 +1,6 @@
 package com.microservice.benchmark.binary;
 
+import com.alibaba.fastjson2.JSONB;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.microservice.example.RandomUtils;
@@ -45,6 +46,7 @@ public class BinaryDeserialization {
   byte[] bsonBytes;
   byte[] jacksonBytes;
   byte[] activejBytes;
+  byte[] alibabaBytes;
   byte[] protobufBytes;
 
   public static void main(String[] args) throws RunnerException {
@@ -91,6 +93,8 @@ public class BinaryDeserialization {
     bsonBytes = bsonMapper.writeValueAsBytes(loginDTO);
     // jackson
     jacksonBytes = jacksonMapper.writeValueAsBytes(loginDTO);
+    // alibabaBytes
+    alibabaBytes = JSONB.toBytes(loginDTO);
     // protobuf
     LoginDtoBuf loginBuf = LoginDtoBuf.newBuilder()
         .setId(id)
@@ -120,6 +124,11 @@ public class BinaryDeserialization {
   @Benchmark
   public LoginDTO bson() throws IOException {
     return bsonMapper.readValue(bsonBytes, LoginDTO.class);
+  }
+
+  @Benchmark
+  public LoginDTO alibabaFastjson2() {
+    return JSONB.parseObject(alibabaBytes, LoginDTO.class);
   }
 
   @Benchmark

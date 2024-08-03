@@ -1,5 +1,6 @@
 package com.microservice.benchmark.binary;
 
+import com.alibaba.fastjson2.JSONB;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservice.example.RandomUtils;
@@ -88,6 +89,11 @@ public class BinarySerialization {
   @Benchmark
   public byte[] jackson() throws JsonProcessingException {
     return jacksonMapper.writeValueAsBytes(buildDto());
+  }
+
+  @Benchmark
+  public byte[] alibabaFastjson2() throws JsonProcessingException {
+    return JSONB.toBytes(buildDto());
   }
 
   @Benchmark

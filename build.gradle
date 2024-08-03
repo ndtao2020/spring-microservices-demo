@@ -136,7 +136,7 @@ dependencies {
     // https://www.baeldung.com/java-performance-mapping-frameworks
     implementation 'ma.glasnost.orika:orika-core:1.5.4'
     implementation 'org.mapstruct:mapstruct:1.6.0.RC1'
-    implementation 'org.modelmapper:modelmapper:3.2.0'
+    implementation 'org.modelmapper:modelmapper:3.2.1'
     // libraries of base64
     // https://mvnrepository.com/open-source/base64-libraries
     implementation 'com.google.guava:guava:33.2.1-jre'
@@ -150,7 +150,7 @@ dependencies {
     implementation 'jakarta.json:jakarta.json-api:2.1.3'
     implementation 'org.eclipse.parsson:parsson:1.1.6'
     implementation 'net.minidev:json-smart:2.5.1'
-    implementation 'org.apache.groovy:groovy-json:4.0.17'
+    implementation 'org.apache.groovy:groovy-json:4.0.22'
     implementation "org.json:json:20240303"
     runtimeOnly 'com.squareup.moshi:moshi:1.15.1'
     // libraries of jwt
@@ -180,6 +180,8 @@ dependencies {
     implementation 'com.google.crypto.tink:tink:1.14.0'
     // Object Serialization
     // https://mvnrepository.com/open-source/object-serialization
+    // https://github.com/activej/jvm-serializers
+    // https://www.reddit.com/r/java/comments/12eltbg/the_state_of_java_object_serialization_libraries/
     implementation "io.activej:activej-serializer:${activejVersion}"
     implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
     implementation 'org.apache.thrift:libthrift:0.20.0'
@@ -196,10 +198,10 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp"
     implementation "com.squareup.okhttp3:logging-interceptor"
     // Log4j
-    implementation platform("org.apache.logging.log4j:log4j-bom:2.22.0")
+    implementation platform("org.apache.logging.log4j:log4j-bom:2.23.1")
     implementation "org.apache.logging.log4j:log4j-api"
     runtimeOnly "org.apache.logging.log4j:log4j-core"
-    implementation 'commons-logging:commons-logging:1.3.0'
+    implementation 'commons-logging:commons-logging:1.3.3'
     // testings
     testImplementation platform("org.junit:junit-bom:5.10.3")
     testImplementation 'org.junit.jupiter:junit-jupiter'
