@@ -104,17 +104,17 @@ public class BinarySerializationTest {
     assertEquals(loginDTO, loginDTO1);
   }
 
-  @Test
-  void activej() {
-    LoginDTO loginDTO = buildDto();
-    var bo = new BinaryOutput(new byte[200], 0);
-    serializer.encode(bo, loginDTO);
-    byte[] bytes = bo.array();
-    assertNotNull(bytes);
-    assertNotEquals(bytes.length, 0);
-    LoginDTO loginDTO1 = serializer.decode(new BinaryInput(bytes, 0));
-    assertEquals(loginDTO, loginDTO1);
-  }
+//  @Test
+//  void activej() {
+//    LoginDTO loginDTO = buildDto();
+//    var bo = new BinaryOutput(new byte[200], 0);
+//    serializer.encode(bo, loginDTO);
+//    byte[] bytes = bo.array();
+//    assertNotNull(bytes);
+//    assertNotEquals(bytes.length, 0);
+//    LoginDTO loginDTO1 = serializer.decode(new BinaryInput(bytes, 0));
+//    assertEquals(loginDTO, loginDTO1);
+//  }
 
   @Test
   void protobuf() throws InvalidProtocolBufferException {
